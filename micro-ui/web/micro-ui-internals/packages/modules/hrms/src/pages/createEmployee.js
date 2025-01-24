@@ -36,15 +36,14 @@ const CreateEmployee = () => {
   }, []);
 
   const checkMailNameNum = (formData) => {
-
-    const email = formData?.SelectEmployeeEmailId?.emailId || '';
-    const name = formData?.SelectEmployeeName?.employeeName || '';
-    const address = formData?.SelectEmployeeCorrespondenceAddress?.correspondenceAddress || '';
-    const validEmail = email.length == 0 ? true : email.match(Digit.Utils.getPattern('Email'));
-    return validEmail && name.match(Digit.Utils.getPattern('Name')) && address.match(Digit.Utils.getPattern('Address'));
-  }
+    const email = formData?.SelectEmployeeEmailId?.emailId || "";
+    const name = formData?.SelectEmployeeName?.employeeName || "";
+    // const address = formData?.SelectEmployeeCorrespondenceAddress?.correspondenceAddress || "";
+    const validEmail = email.length == 0 ? true : email.match(Digit.Utils.getPattern("Email"));
+    return validEmail && name.match(Digit.Utils.getPattern("Name")) ; //&& address.match(Digit.Utils.getPattern("Address"));
+  };
   useEffect(() => {
-    if (mobileNumber && mobileNumber.length == 10 && mobileNumber.match(Digit.Utils.getPattern('MobileNo'))) {
+    if (mobileNumber && mobileNumber.length == 10 && mobileNumber.match(Digit.Utils.getPattern("MobileNo"))) {
       setShowToast(null);
       Digit.HRMSService.search(tenantId, null, { phone: mobileNumber }).then((result, err) => {
         if (result.Employees.length > 0) {
@@ -102,7 +101,13 @@ const CreateEmployee = () => {
     for (let i = 0; i < formData?.Assignments?.length; i++) {
       let key = formData?.Assignments[i];
       if (
-        !(key.department && key.designation && key.courtroom && key.fromDate && (formData?.Assignments[i].toDate || formData?.Assignments[i]?.isCurrentAssignment))
+        !(
+          key.courtEstablishment &&
+          key.designation &&
+          key.courtroom &&
+          key.fromDate &&
+          (formData?.Assignments[i].toDate || formData?.Assignments[i]?.isCurrentAssignment)
+        )
       ) {
         setassigncheck = false;
         break;
@@ -115,7 +120,7 @@ const CreateEmployee = () => {
     }
     if (
       // formData?.SelectDateofEmployment?.dateOfAppointment &&
-      formData?.SelectEmployeeCorrespondenceAddress?.correspondenceAddress &&
+      // formData?.SelectEmployeeCorrespondenceAddress?.correspondenceAddress &&
       // formData?.SelectEmployeeGender?.gender.code &&
       formData?.SelectEmployeeName?.employeeName &&
       formData?.SelectEmployeeType?.code &&
@@ -142,11 +147,12 @@ const CreateEmployee = () => {
     //   setShowToast({ key: true, label: "ERR_BASE_TENANT_MANDATORY" });
     //   return;
     // }
+
     if (!Object.values(data.Jurisdictions.reduce((acc, sum) => {
-      if (sum && sum?.tenantId) {
-        acc[sum.tenantId] = acc[sum.tenantId] ? acc[sum.tenantId] + 1 : 1;
-      }
-      return acc;
+          if (sum && sum?.tenantId) {
+            acc[sum.tenantId] = acc[sum.tenantId] ? acc[sum.tenantId] + 1 : 1;
+          }
+          return acc;
     }, {})).every(s => s == 1)) {
       setShowToast({ key: true, label: "ERR_INVALID_JURISDICTION" });
       return;
@@ -172,14 +178,14 @@ const CreateEmployee = () => {
         tenantId: tenantId,
         employeeStatus: "EMPLOYED",
         assignments: data?.Assignments,
-        code: data?.SelectEmployeeId?.code ? data?.SelectEmployeeId?.code : undefined,
+        // code: data?.SelectEmployeeId?.code ? data?.SelectEmployeeId?.code : undefined,
         // dateOfAppointment: new Date(data?.SelectDateofEmployment?.dateOfAppointment).getTime(),
         employeeType: data?.SelectEmployeeType?.code,
         jurisdictions: data?.Jurisdictions,
         user: {
           mobileNumber: data?.SelectEmployeePhoneNumber?.mobileNumber,
           name: data?.SelectEmployeeName?.employeeName,
-          correspondenceAddress: data?.SelectEmployeeCorrespondenceAddress?.correspondenceAddress,
+          // correspondenceAddress: data?.SelectEmployeeCorrespondenceAddress?.correspondenceAddress,
           emailId: data?.SelectEmployeeEmailId?.emailId ? data?.SelectEmployeeEmailId?.emailId : undefined,
           // gender: data?.SelectEmployeeGender?.gender.code,
           dob: new Date(data?.SelectDateofBirthEmployment?.dob).getTime(),
@@ -191,7 +197,7 @@ const CreateEmployee = () => {
         tests: [],
       },
     ];
-      /* use customiseCreateFormData hook to make some chnages to the Employee object */
+    /* use customiseCreateFormData hook to make some chnages to the Employee object */
       Employees=Digit?.Customizations?.HRMS?.customiseCreateFormData?Digit.Customizations.HRMS.customiseCreateFormData(data,Employees):Employees;
 
     if (data?.SelectEmployeeId?.code && data?.SelectEmployeeId?.code?.trim().length > 0) {

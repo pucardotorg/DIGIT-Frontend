@@ -32,12 +32,12 @@ export const newConfig = [
         key: "SelectEmployeeEmailId",
         withoutLabel: true,
       },
-      {
-        type: "component",
-        component: "SelectEmployeeCorrespondenceAddress",
-        key: "SelectEmployeeCorrespondenceAddress",
-        withoutLabel: true,
-      },
+      // {
+      //   type: "component",
+      //   component: "SelectEmployeeCorrespondenceAddress",
+      //   key: "SelectEmployeeCorrespondenceAddress",
+      //   withoutLabel: true,
+      // },
     ],
   },
   {
@@ -55,23 +55,23 @@ export const newConfig = [
       //   key: "SelectDateofEmployment",
       //   withoutLabel: true,
       // },
-      {
-        type: "component",
-        component: "SelectEmployeeId",
-        key: "SelectEmployeeId",
-        withoutLabel: true,
-      },
+      // {
+      //   type: "component",
+      //   component: "SelectEmployeeId",
+      //   key: "SelectEmployeeId",
+      //   withoutLabel: true,
+      // },
 
-      {
-        type: "component",
-        component: "HRBanner",
-        key: "Banner1",
-        withoutLabel: true,
-        texts: {
-          headerCaption: "Info",
-          header: "HR_EMP_ID_MESSAGE",
-        },
-      },
+      // {
+      //   type: "component",
+      //   component: "HRBanner",
+      //   key: "Banner1",
+      //   withoutLabel: true,
+      //   texts: {
+      //     headerCaption: "Info",
+      //     header: "HR_EMP_ID_MESSAGE",
+      //   },
+      // },
     ],
   },
   {

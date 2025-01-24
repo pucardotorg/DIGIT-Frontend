@@ -1,21 +1,21 @@
-import { CardLabel, Dropdown, LabelFieldPair, Loader, RemoveableTag ,MultiSelectDropdown} from "@egovernments/digit-ui-react-components";
+import { CardLabel, Dropdown, LabelFieldPair, Loader, RemoveableTag, MultiSelectDropdown } from "@egovernments/digit-ui-react-components";
 import React, { useEffect, useState } from "react";
 import cleanup from "../Utils/cleanup";
 
 const makeDefaultValues = (sessionFormData) => {
-  return sessionFormData?.Jurisdictions?.map((ele,index)=>{
+  return sessionFormData?.Jurisdictions?.map((ele, index) => {
     return {
       key: index,
       hierarchy: {
         code: ele?.hierarchy,
         name: ele?.hierarchy,
       },
-      boundaryType: { label: ele?.boundaryType, i18text:ele.boundaryType ?`EGOV_LOCATION_BOUNDARYTYPE_${ele.boundaryType?.toUpperCase()}`:null },
+      boundaryType: { label: ele?.boundaryType, i18text: ele.boundaryType ? `EGOV_LOCATION_BOUNDARYTYPE_${ele.boundaryType?.toUpperCase()}` : null },
       boundary: { code: ele?.boundary },
       roles: ele?.roles,
-    }
-  })
-}
+    };
+  });
+};
 
 const Jurisdictions = ({ t, config, onSelect, userType, formData }) => {
   const tenantId = Digit.ULBService.getCurrentTenantId();
@@ -23,19 +23,21 @@ const Jurisdictions = ({ t, config, onSelect, userType, formData }) => {
   const { data: data = {}, isLoading } = Digit.Hooks.hrms.useHrmsMDMS(tenantId, "egov-hrms", "HRMSRolesandDesignation") || {};
 
   const employeeCreateSession = Digit.Hooks.useSessionStorage("NEW_EMPLOYEE_CREATE", {});
-  const [sessionFormData,setSessionFormData, clearSessionFormData] = employeeCreateSession;
-  const isEdit = window.location.href.includes("hrms/edit")
+  const [sessionFormData, setSessionFormData, clearSessionFormData] = employeeCreateSession;
+  const isEdit = window.location.href.includes("hrms/edit");
   const [jurisdictions, setjurisdictions] = useState(
-    !isEdit && sessionFormData?.Jurisdictions?.length>0 ? makeDefaultValues(sessionFormData) : ( formData?.Jurisdictions ||  [
-      {
-        id: undefined,
-        key: 1,
-        hierarchy: null,
-        boundaryType: null,
-        boundary: null,
-        roles: [],
-      },
-    ])
+    !isEdit && sessionFormData?.Jurisdictions?.length > 0
+      ? makeDefaultValues(sessionFormData)
+      : formData?.Jurisdictions || [
+          {
+            id: undefined,
+            key: 1,
+            hierarchy: null,
+            boundaryType: null,
+            boundary: null,
+            roles: [],
+          },
+        ]
   );
 
   useEffect(() => {
@@ -115,14 +117,21 @@ const Jurisdictions = ({ t, config, onSelect, userType, formData }) => {
   // function gethierarchylistdata() {
   //   return data?.MdmsRes?.["egov-location"]["TenantBoundary"]?.map((ele) => ele.hierarchyType) || [];
   // }
-  
 
   function getboundarydata() {
     return [];
   }
 
   function getroledata() {
-    return data?.MdmsRes?.["ACCESSCONTROL-ROLES"].roles.map(role => { return { code: role.code, name: role?.name ? role?.name : " " , labelKey: 'ACCESSCONTROL_ROLES_ROLES_' + role.code } });
+    return data?.MdmsRes?.["ACCESSCONTROL-ROLES"].roles
+      .map((role) => {
+        return { code: role.code, name: role?.name ? role?.name : " ", labelKey: "ACCESSCONTROL_ROLES_ROLES_" + role.code };
+      })
+      .sort((a, b) => {
+        const labelKeyA = t(a?.labelKey) || "";
+        const labelKeyB = t(b?.labelKey) || "";
+        return labelKeyA.localeCompare(labelKeyB);
+      });
   }
 
   if (isLoading) {
@@ -188,7 +197,7 @@ function Jurisdiction({
   //     selectBoundaryType([]);
   //   }
   // }, [jurisdiction?.hierarchy, data?.MdmsRes]);
-  
+
   const tenant = Digit.ULBService.getCurrentTenantId();
   // useEffect(() => {
   //   if (Array.isArray(data?.MdmsRes?.tenant?.tenants)) {
@@ -204,14 +213,12 @@ function Jurisdiction({
   //     selectboundary([]);
   //   }
   // }, [jurisdiction?.boundaryType, data?.MdmsRes]);
-  
 
   // useEffect(() => {
   //   if (Boundary.length > 0) {
   //     selectedboundary(Boundary.find((ele) => ele.code === jurisdiction?.boundary?.code));
   //   }
   // }, [Boundary]);
-  
 
   // const selectHierarchy = (value) => {
   //   setjurisdictions((pre) => pre.map((item) => (item.key === jurisdiction.key ? { ...item, hierarchy: "court-district-hierarchy" } : item)));
@@ -227,11 +234,14 @@ function Jurisdiction({
 
   const selectrole = (e, data) => {
     let res = [];
-    e && e?.map((ob) => {
-      res.push(ob?.[1]);
-    });
+    e &&
+      e?.map((ob) => {
+        res.push(ob?.[1]);
+      });
 
-    res?.forEach(resData => {resData.labelKey = 'ACCESSCONTROL_ROLES_ROLES_' + resData.code})
+    res?.forEach((resData) => {
+      resData.labelKey = "ACCESSCONTROL_ROLES_ROLES_" + resData.code;
+    });
 
     setjurisdictions((pre) => pre.map((item) => (item.key === jurisdiction.key ? { ...item, roles: res } : item)));
   };
