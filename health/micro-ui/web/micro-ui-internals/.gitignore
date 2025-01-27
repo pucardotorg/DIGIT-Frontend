@@ -3,7 +3,6 @@
 
 ### eGov ###
 packages/css/example/index.css
-package-lock.json
 locales/
 build/
 packages/**/dist/

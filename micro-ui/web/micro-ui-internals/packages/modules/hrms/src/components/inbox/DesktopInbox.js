@@ -70,16 +70,11 @@ const DesktopInbox = ({ tableConfig, filterComponent, ...props }) => {
         },
       },
       {
-        Header: t("HR_DEPT_LABEL"),
+        Header: t("HR_COURT_ESTABLISHMENT_LABEL"),
         disableSortBy: true,
         Cell: ({ row }) => {
-          return GetCell(
-            `${
-              t(
-                "COMMON_MASTERS_DEPARTMENT_" + row.original?.assignments?.sort((a, b) => new Date(a.fromDate) - new Date(b.fromDate))[0]?.department
-              ) || ""
-            }`
-          );
+          const courtEstablishment = row.original?.assignments?.sort((a, b) => new Date(a.fromDate) - new Date(b.fromDate))[0]?.courtEstablishment;
+          return GetCell(`${t(courtEstablishment ? "COMMON_MASTERS_COURT_ESTABLISHMENT_" + courtEstablishment : "") || ""}`);
         },
       },
       {
@@ -124,7 +119,6 @@ const DesktopInbox = ({ tableConfig, filterComponent, ...props }) => {
             },
           };
         }}
-        onPageSizeChange={props.onPageSizeChange}
         currentPage={props.currentPage}
         onNextPage={props.onNextPage}
         onPrevPage={props.onPrevPage}

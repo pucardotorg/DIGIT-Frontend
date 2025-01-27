@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Loader } from "@egovernments/digit-ui-react-components";
 import { Dropdown, LabelFieldPair, CardLabel } from "@egovernments/digit-ui-react-components";
 import { useLocation } from "react-router-dom";
@@ -13,6 +13,17 @@ const SelectEmployeeType = ({ t, config, onSelect, formData = {}, userType }) =>
   function SelectEmployeeType(value) {
     setemployeeType(value);
   }
+
+  const sortedEmployeeTypes = useMemo(() => {
+    return EmployeeTypes?.["egov-hrms"]?.EmployeeType?.map((a) => ({
+      ...a,
+      il8key: t(a?.code),
+    })).sort((a, b) => {
+      const codeA = a?.il8key || "";
+      const codeB = b?.il8key || "";
+      return codeA.localeCompare(codeB);
+    });
+  }, [EmployeeTypes]);
 
   useEffect(() => {
     onSelect(config.key, employeeType);
@@ -42,7 +53,7 @@ const SelectEmployeeType = ({ t, config, onSelect, formData = {}, userType }) =>
         <Dropdown
           className="form-field"
           selected={employeeType}
-          option={EmployeeTypes?.["egov-hrms"]?.EmployeeType}
+          option={sortedEmployeeTypes}
           select={SelectEmployeeType}
           optionKey="code"
           defaultValue={undefined}

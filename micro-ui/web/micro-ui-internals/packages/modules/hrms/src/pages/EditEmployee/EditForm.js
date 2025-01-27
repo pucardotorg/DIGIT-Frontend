@@ -93,9 +93,13 @@ const EditForm = ({ tenantId, data }) => {
           code: ele.designation,
           i18key: "COMMON_MASTERS_DESIGNATION_" + ele.designation,
         },
-        department: {
-          code: ele.department,
-          i18key: "COMMON_MASTERS_DEPARTMENT_" + ele.department,
+        courtEstablishment: {
+          code: ele.courtEstablishment,
+          i18key: "COMMON_MASTERS_COURT_ESTABLISHMENT_" + ele.courtEstablishment,
+        },
+        courtroom: {
+          code: ele.courtroom,
+          i18key: "COMMON_MASTERS_COURT_ROOM_" + ele.courtroom,
         },
       });
     }),

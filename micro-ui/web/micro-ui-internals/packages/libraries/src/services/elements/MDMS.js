@@ -726,7 +726,7 @@ const getHrmsEmployeeRolesandDesignations = () => ({
     {
       moduleName: "common-masters",
       masterDetails: [
-        { name: "Department", filter: "[?(@.active == true)]" },
+        { name: "CourtEstablishment", filter: "[?(@.active == true)]" },
         { name: "Designation", filter: "[?(@.active == true)]" },
         { name: "Court_Rooms", filter: "[?(@.active == true)]" },
       ],

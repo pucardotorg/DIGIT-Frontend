@@ -14,13 +14,13 @@ const makeDefaultValues = (sessionFormData) => {
         code: ele?.designation,
         i18key: ele.designation ? "COMMON_MASTERS_DESIGNATION_" + ele.designation:null,
       },
-      department: {
-        code: ele?.department,
-        i18key:ele.department ? "COMMON_MASTERS_DEPARTMENT_" + ele.department : null,
+      courtEstablishment: {
+        code: ele?.courtEstablishment,
+        i18key: ele.courtEstablishment ? "COMMON_MASTERS_COURT_ESTABLISHMENT_" + ele.courtEstablishment : null,
       },
       courtroom: {
         code: ele?.courtroom,
-        i18key:ele.department ? "COMMON_MASTERS_COURT_ROOM_" + ele.courtroom : null,
+        i18key: ele.courtEstablishment ? "COMMON_MASTERS_COURT_ROOM_" + ele.courtroom : null,
       },
     }
   })
@@ -34,19 +34,21 @@ const Assignments = ({ t, config, onSelect, userType, formData }) => {
   const employeeCreateSession = Digit.Hooks.useSessionStorage("NEW_EMPLOYEE_CREATE", {});
   const [sessionFormData,setSessionFormData, clearSessionFormData] = employeeCreateSession;
   const isEdit = window.location.href.includes("hrms/edit")
-  
+
   const [assignments, setassignments] = useState(
-    !isEdit && sessionFormData?.Assignments ? makeDefaultValues(sessionFormData) :  (formData?.Assignments || [
-      {
-        key: 1,
-        fromDate: undefined,
-        toDate: undefined,
-        isCurrentAssignment: false,
-        department: null,
-        designation: null,
-        courtroom: null,
-      },
-    ])
+    !isEdit && sessionFormData?.Assignments
+      ? makeDefaultValues(sessionFormData)
+      : formData?.Assignments || [
+          {
+            key: 1,
+            fromDate: undefined,
+            toDate: undefined,
+            isCurrentAssignment: false,
+            courtEstablishment: null,
+            designation: null,
+            courtroom: null,
+          },
+        ]
   );
   const reviseIndexKeys = () => {
     setassignments((prev) => prev.map((unit, index) => ({ ...unit, key: index })));
@@ -60,7 +62,7 @@ const Assignments = ({ t, config, onSelect, userType, formData }) => {
         fromDate: undefined,
         toDate: undefined,
         isCurrentAssignment: false,
-        department: null,
+        courtEstablishment: null,
         designation: null,
         courtroom: null,
       },
@@ -79,18 +81,18 @@ const Assignments = ({ t, config, onSelect, userType, formData }) => {
     var promises = assignments?.map((assignment) => {
       return assignment
         ? cleanup({
-          id: assignment?.id,
-          position: assignment?.position,
-          govtOrderNumber: assignment?.govtOrderNumber,
-          tenantid: assignment?.tenantid,
-          auditDetails: assignment?.auditDetails,
-          fromDate: assignment?.fromDate ? new Date(assignment?.fromDate).getTime() : undefined,
-          toDate: assignment?.toDate ? new Date(assignment?.toDate).getTime() : undefined,
-          isCurrentAssignment: assignment?.isCurrentAssignment,
-          department: assignment?.department?.code,
-          designation: assignment?.designation?.code,
-          courtroom: assignment?.courtroom?.code,
-        })
+            id: assignment?.id,
+            position: assignment?.position,
+            govtOrderNumber: assignment?.govtOrderNumber,
+            tenantid: assignment?.tenantid,
+            auditDetails: assignment?.auditDetails,
+            fromDate: assignment?.fromDate ? new Date(assignment?.fromDate).getTime() : undefined,
+            toDate: assignment?.toDate ? new Date(assignment?.toDate).getTime() : undefined,
+            isCurrentAssignment: assignment?.isCurrentAssignment,
+            courtEstablishment: assignment?.courtEstablishment?.code,
+            designation: assignment?.designation?.code,
+            courtroom: assignment?.courtroom?.code,
+          })
         : [];
     });
 
@@ -108,27 +110,40 @@ const Assignments = ({ t, config, onSelect, userType, formData }) => {
     });
   }, [assignments]);
 
-  let department = [];
+  let courtEstablishment = [];
   let designation = [];
   let courtroom = [];
   const [focusIndex, setFocusIndex] = useState(-1);
 
-  function getdepartmentdata() {
-    return data?.MdmsRes?.["common-masters"]?.Department.map((ele) => {
-      ele["i18key"] = t("COMMON_MASTERS_DEPARTMENT_" + ele.code);
+  function getCourtEstablishment() {
+    return data?.MdmsRes?.["common-masters"]?.CourtEstablishment?.map((ele) => {
+      ele["i18key"] = t("COMMON_MASTERS_COURT_ESTABLISHMENT_" + ele.code);
       return ele;
+    }).sort((a, b) => {
+      const keyA = a?.i18key || "";
+      const keyB = b?.i18key || "";
+      return keyA.localeCompare(keyB);
     });
   }
+
   function getdesignationdata() {
     return data?.MdmsRes?.["common-masters"]?.Designation.map((ele) => {
       ele["i18key"] = t("COMMON_MASTERS_DESIGNATION_" + ele.code);
       return ele;
+    }).sort((a, b) => {
+      const keyA = a?.i18key || "";
+      const keyB = b?.i18key || "";
+      return keyA.localeCompare(keyB);
     });
   }
   function getcourtroomdata() {
     return data?.MdmsRes?.["common-masters"]?.Court_Rooms.map((ele) => {
       ele["i18key"] = t("COMMON_MASTERS_COURT_R00M_" + ele.code);
       return ele;
+    }).sort((a, b) => {
+      const keyA = a?.i18key || "";
+      const keyB = b?.i18key || "";
+      return keyA.localeCompare(keyB);
     });
   }
   if (isLoading) {
@@ -147,8 +162,8 @@ const Assignments = ({ t, config, onSelect, userType, formData }) => {
           index={index}
           focusIndex={focusIndex}
           setFocusIndex={setFocusIndex}
-          getdepartmentdata={getdepartmentdata}
-          department={department}
+          getCourtEstablishment={getCourtEstablishment}
+          courtEstablishment={courtEstablishment}
           designation={designation}
           courtroom={courtroom}
           getdesignationdata={getdesignationdata}
@@ -173,8 +188,8 @@ function Assignment({
   index,
   focusIndex,
   setFocusIndex,
-  getdepartmentdata,
-  department,
+  getCourtEstablishment,
+  courtEstablishment,
   formData,
   handleRemoveUnit,
   designation,
@@ -184,8 +199,8 @@ function Assignment({
   setCurrentAssiginmentDate,
   currentassignemtDate,
 }) {
-  const selectDepartment = (value) => {
-    setassignments((pre) => pre.map((item) => (item.key === assignment.key ? { ...item, department: value } : item)));
+  const selectCourtEstablishment = (value) => {
+    setassignments((pre) => pre.map((item) => (item.key === assignment.key ? { ...item, courtEstablishment: value } : item)));
   };
   const selectDesignation = (value) => {
     setassignments((pre) => pre.map((item) => (item.key === assignment.key ? { ...item, designation: value } : item)));
@@ -203,9 +218,9 @@ function Assignment({
         pre.map((item) =>
           item.key === assignment.key
             ? {
-              ...item,
-              toDate: null,
-            }
+                ...item,
+                toDate: null,
+              }
             : item
         )
       );
@@ -294,15 +309,15 @@ function Assignment({
           </div>
         </LabelFieldPair>
         <LabelFieldPair>
-          <CardLabel className={assignment?.id ? "card-label-smaller" : "card-label-smaller"}> {`${t("HR_DEPT_LABEL")} * `}</CardLabel>
+          <CardLabel className={assignment?.id ? "card-label-smaller" : "card-label-smaller"}> {`${t("HR_COURT_ESTABLISHMENT")} * `}</CardLabel>
           <Dropdown
             className="form-field"
-            selected={assignment?.department}
+            selected={assignment?.courtEstablishment}
             disable={assignment?.id ? true : false}
             optionKey={"i18key"}
-            option={getdepartmentdata(department) || []}
-            select={selectDepartment}
-            optionCardStyles={{maxHeight:"300px"}}
+            option={getCourtEstablishment(courtEstablishment) || []}
+            select={selectCourtEstablishment}
+            optionCardStyles={{ maxHeight: "300px" }}
             t={t}
           />
         </LabelFieldPair>
