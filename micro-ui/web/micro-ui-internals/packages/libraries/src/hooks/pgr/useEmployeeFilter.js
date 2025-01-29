@@ -12,15 +12,15 @@ const useEmployeeFilter = (tenantId, roles, complaintDetails) => {
       const serviceDefs = await Digit.MDMSService.getServiceDefs(tenantId, "PGR");
       const serviceCode = complaintDetails.service.serviceCode;
       const service = serviceDefs?.find((def) => def.serviceCode === serviceCode);
-      const department = service?.department;
+      const courtEstablishment = service?.CourtEstablishment;
       const employees = searchResponse.Employees.filter((employee) =>
-        employee.assignments.map((assignment) => assignment.department).includes(department)
+        employee.assignments.map((assignment) => assignment.courtEstablishment).includes(courtEstablishment)
       );
 
       //emplpoyess data sholld only conatin name uuid dept
       setEmployeeDetails([
         {
-          department: t(`COMMON_MASTERS_DEPARTMENT_${department}`),
+          courtEstablishment: t(`COMMON_MASTERS_COURT_ESTABLISHMENT_${courtEstablishment}`),
           employees: employees.map((employee) => {
             return { uuid: employee.user.uuid, name: employee.user.name };
           }),

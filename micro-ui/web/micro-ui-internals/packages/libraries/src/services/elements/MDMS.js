@@ -50,7 +50,7 @@ const initRequestBody = (tenantId) => ({
     moduleDetails: [
       {
         moduleName: "common-masters",
-        masterDetails: [{ name: "Department" }, { name: "Court_Rooms" },{ name: "Designation" }, { name: "StateInfo" }, { name: "wfSlaConfig" }, { name: "uiHomePage" }],
+        masterDetails: [{ name: "CourtEstablishment" }, { name: "Court_Rooms" },{ name: "Designation" }, { name: "StateInfo" }, { name: "wfSlaConfig" }, { name: "uiHomePage" }],
       },
       {
         moduleName: "tenant",
