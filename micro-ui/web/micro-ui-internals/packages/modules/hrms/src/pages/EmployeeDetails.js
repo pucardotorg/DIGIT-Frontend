@@ -88,11 +88,6 @@ const Details = () => {
             <CardSubHeader className="card-section-header">{t("HR_NEW_EMPLOYEE_FORM_HEADER")}</CardSubHeader>
             <StatusTable>
               <Row label={t("HR_EMPLOYMENT_TYPE_LABEL")} text={t(data?.Employees?.[0]?.employeeType ? `${data?.Employees?.[0]?.employeeType}` : "NA")} textStyle={{ whiteSpace: "pre" }} />
-              <Row
-                label={t("HR_APPOINTMENT_DATE_LABEL")}
-                text={convertEpochFormateToDate(data?.Employees?.[0]?.dateOfAppointment) || "NA"}
-                textStyle={{ whiteSpace: "pre" }}
-              />
               <Row label={t("HR_EMPLOYEE_ID_LABEL")} text={data?.Employees?.[0]?.code} />
             </StatusTable>
             {data?.Employees?.[0]?.isActive == false ? (

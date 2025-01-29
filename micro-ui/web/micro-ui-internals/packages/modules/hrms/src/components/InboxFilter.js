@@ -42,8 +42,8 @@ const Filter = ({ searchParams, onFilterChange, onSearch, removeParam, ...props 
     "egov-hrms",
     "HRMSRolesandDesignation"
   );
-  const [departments, setDepartments] = useState(() => {
-    return { departments: null };
+  const [courtEstablishment, setCourtEstablishment] = useState(() => {
+    return { courtEstablishment: null };
   });
 
   const [roles, setRoles] = useState(() => {
@@ -81,10 +81,10 @@ const Filter = ({ searchParams, onFilterChange, onSearch, removeParam, ...props 
   }, [filters.role]);
 
   useEffect(() => {
-    if (departments) {
-      setSearchParams({ ..._searchParams, departments: departments.code });
+    if (courtEstablishment) {
+      setSearchParams({ ..._searchParams, CourtEstablishment: courtEstablishment.code });
     }
-  }, [departments]);
+  }, [courtEstablishment]);
 
   useEffect(() => {
     if (roles) {
@@ -104,7 +104,7 @@ const Filter = ({ searchParams, onFilterChange, onSearch, removeParam, ...props 
   const clearAll = () => {
     onFilterChange({ delete: Object.keys(searchParams) });
     settenantId(tenantIds.filter((ele) => ele.code == Digit.ULBService.getCurrentTenantId())[0]);
-    setDepartments(null);
+    setCourtEstablishment(null);
     setRoles(null);
     setIsactive(null);
     props?.onClose?.();
@@ -173,11 +173,14 @@ const Filter = ({ searchParams, onFilterChange, onSearch, removeParam, ...props 
               />
             </div>
             <div>
-              <div className="filter-label">{t("HR_COMMON_TABLE_COL_DEPT")}</div>
+              <div className="filter-label">{t("HR_COMMON_TABLE_COL_COURT_ESTABLISHMENT")}</div>
               <Dropdown
-                option={Digit.Utils.locale.convertToLocaleData(data?.MdmsRes?.["common-masters"]?.Department, 'COMMON_MASTERS_DEPARTMENT')}
-                selected={departments}
-                select={setDepartments}
+                option={Digit.Utils.locale.convertToLocaleData(
+                  data?.MdmsRes?.["common-masters"]?.CourtEstablishment,
+                  "COMMON_MASTERS_COURT_ESTABLISHMENT"
+                )}
+                selected={courtEstablishment}
+                select={setCourtEstablishment}
                 optionKey={"i18text"}
                 t={t}
               />
@@ -208,7 +211,7 @@ const Filter = ({ searchParams, onFilterChange, onSearch, removeParam, ...props 
                 ]}
               />
               {props.type !== "mobile" && <div>
-                <SubmitBar onSubmit={() => onFilterChange(_searchParams)} label={t("HR_COMMON_APPLY")} />
+                  <SubmitBar onSubmit={() => onFilterChange(_searchParams)} label={t("HR_COMMON_APPLY")} />
               </div>}
             </div>
           </div>
