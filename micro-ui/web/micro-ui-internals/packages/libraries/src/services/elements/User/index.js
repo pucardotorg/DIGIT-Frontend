@@ -8,6 +8,7 @@ export const UserService = {
     Object.entries(details).forEach(([key, value]) => data.append(key, value));
     data.append("scope", "read");
     data.append("grant_type", "password");
+    console.log("detailss");
 
     let authResponse = await ServiceRequest({
       serviceName: "authenticate",

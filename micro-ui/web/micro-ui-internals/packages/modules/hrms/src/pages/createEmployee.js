@@ -1,4 +1,4 @@
-import { FormComposer, Toast ,Loader, Header} from "@egovernments/digit-ui-react-components";
+import { FormComposer, Toast, Loader, Header } from "@egovernments/digit-ui-react-components";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
@@ -11,20 +11,34 @@ const CreateEmployee = () => {
   const [mobileNumber, setMobileNumber] = useState(null);
   const [showToast, setShowToast] = useState(null);
   const [phonecheck, setPhonecheck] = useState(false);
-  const [checkfield, setcheck] = useState(false)
+  const [prevFormData , setPrevFormData] = useState(null);
+  // const [checkfield, setcheck] = useState(false);
   const { t } = useTranslation();
   const history = useHistory();
   const isMobile = window.Digit.Utils.browser.isMobile();
 
- const { data: mdmsData,isLoading } = Digit.Hooks.useCommonMDMS(Digit.ULBService.getStateId(), "egov-hrms", ["CommonFieldsConfig"], {
+  const { data: mdmsData, isLoading } = Digit.Hooks.useCommonMDMS(Digit.ULBService.getStateId(), "egov-hrms", ["CommonFieldsConfig"], {
     select: (data) => {
       return {
-        config: data?.MdmsRes?.['egov-hrms']?.CommonFieldsConfig
+        config: data?.MdmsRes?.["egov-hrms"]?.CommonFieldsConfig,
       };
     },
     retry: false,
     enable: false,
   });
+
+  const { data: employeeRoleMapping, isMappingLoading } = Digit.Hooks.useCustomMDMS(
+    Digit.ULBService.getStateId(),
+    "egov-hrms",
+    [{ name: "EmployeeRolesMapping" }],
+    {
+      retry: false,
+      enable: false,
+    }
+  );
+
+  
+  console.log("employeeRoleMapping", employeeRoleMapping);
   const [mutationHappened, setMutationHappened, clear] = Digit.Hooks.useSessionStorage("EMPLOYEE_HRMS_MUTATION_HAPPENED", false);
   const [errorInfo, setErrorInfo, clearError] = Digit.Hooks.useSessionStorage("EMPLOYEE_HRMS_ERROR_DATA", false);
   const [successData, setsuccessData, clearSuccessData] = Digit.Hooks.useSessionStorage("EMPLOYEE_HRMS_MUTATION_SUCCESS_DATA", false);
@@ -40,7 +54,7 @@ const CreateEmployee = () => {
     const name = formData?.SelectEmployeeName?.employeeName || "";
     // const address = formData?.SelectEmployeeCorrespondenceAddress?.correspondenceAddress || "";
     const validEmail = email.length == 0 ? true : email.match(Digit.Utils.getPattern("Email"));
-    return validEmail && name.match(Digit.Utils.getPattern("Name")) ; //&& address.match(Digit.Utils.getPattern("Address"));
+    return validEmail && name.match(Digit.Utils.getPattern("Name")); //&& address.match(Digit.Utils.getPattern("Address"));
   };
   useEffect(() => {
     if (mobileNumber && mobileNumber.length == 10 && mobileNumber.match(Digit.Utils.getPattern("MobileNo"))) {
@@ -58,28 +72,27 @@ const CreateEmployee = () => {
     }
   }, [mobileNumber]);
 
-  const defaultValues = {
-
-    Jurisdictions:
-      [{
-        id: undefined,
-        key: 1,
-        hierarchy: null,
-        boundaryType: null,
-        boundary: {
-          code: tenantId
-        },
-        roles: [],
-      }]
-  }
+  // const defaultValues = {
+  //   Jurisdictions: [
+  //     {
+  //       id: undefined,
+  //       key: 1,
+  //       hierarchy: null,
+  //       boundaryType: null,
+  //       boundary: {
+  //         code: tenantId,
+  //       },
+  //       roles: [],
+  //     },
+  //   ],
+  // };
 
   const employeeCreateSession = Digit.Hooks.useSessionStorage("NEW_EMPLOYEE_CREATE", {});
-  const [sessionFormData,setSessionFormData, clearSessionFormData] = employeeCreateSession;
+  const [sessionFormData, setSessionFormData, clearSessionFormData] = employeeCreateSession;
 
   const onFormValueChange = (setValue = true, formData) => {
-
     if (!_.isEqual(sessionFormData, formData)) {
-        setSessionFormData({...sessionFormData,...formData});
+      setSessionFormData({ ...sessionFormData, ...formData });
     }
 
     if (formData?.SelectEmployeePhoneNumber?.mobileNumber) {
@@ -87,18 +100,45 @@ const CreateEmployee = () => {
     } else {
       setMobileNumber(formData?.SelectEmployeePhoneNumber?.mobileNumber);
     }
-    for (let i = 0; i < formData?.Jurisdictions?.length; i++) {
-      let key = formData?.Jurisdictions[i];
-      if (!(key?.boundary && key?.boundaryType && key?.hierarchy && key?.tenantId && key?.roles?.length > 0)) {
-        setcheck(false);
-        break;
-      } else {
-        setcheck(true);
-      }
-    }
+    const selectedEmployeetype = formData?.SelectEmployeeType?.code;
+    const prevEmployeeType = prevFormData?.SelectEmployeeType?.code;
+
+    console.log(formData);
+    
+    // for (let i = 0; i < formData?.Jurisdictions?.length; i++) {
+    //   let key = formData?.Jurisdictions[i];
+    //   if (!(key?.boundary && key?.boundaryType && key?.hierarchy && key?.tenantId && key?.roles?.length > 0)) {
+    //     setcheck(false);
+    //     break;
+    //   } else {
+    //     setcheck(true);
+    //   }
+    // }
+    const roleMapping = employeeRoleMapping?.["egov-hrms"]?.EmployeeRolesMapping;
+
 
     let setassigncheck = false;
     for (let i = 0; i < formData?.Assignments?.length; i++) {
+      if(prevEmployeeType !== selectedEmployeetype){
+        console.log("fdfnfsfnn");
+        
+        console.log(roleMapping?.map((e) => e.code === selectedEmployeetype));
+        let updatedAssignedment = formData?.Assignments;
+        updatedAssignedment[i].roles = [
+          {
+              "code": "ADVOCATE_APPLICATION_VIEWER",
+              "name": "ADVOCATE_APPLICATION_VIEWER",
+              "labelKey": "ACCESSCONTROL_ROLES_ROLES_ADVOCATE_APPLICATION_VIEWER"
+          }
+          
+      ]//roleMapping?.map((e) => e.code === selectedEmployeetype);
+      ;
+          console.log(updatedAssignedment,"upp");
+        setValue("Assignments", updatedAssignedment);
+        setPrevFormData(formData);
+        formData.Assignments = updatedAssignedment;
+        setSessionFormData({ ...sessionFormData, ...formData });
+      }
       let key = formData?.Assignments[i];
       if (
         !(
@@ -138,9 +178,7 @@ const CreateEmployee = () => {
 
   const navigateToAcknowledgement = (Employees) => {
     history.replace(`/${window?.contextPath}/employee/hrms/response`, { Employees, key: "CREATE", action: "CREATE" });
-  }
-
-  
+  };
 
   const onSubmit = (data) => {
     // if (data.Jurisdictions.filter(juris => juris.tenantId == tenantId).length == 0) {
@@ -148,28 +186,29 @@ const CreateEmployee = () => {
     //   return;
     // }
 
-    if (!Object.values(data.Jurisdictions.reduce((acc, sum) => {
-          if (sum && sum?.tenantId) {
-            acc[sum.tenantId] = acc[sum.tenantId] ? acc[sum.tenantId] + 1 : 1;
-          }
-          return acc;
-    }, {})).every(s => s == 1)) {
-      setShowToast({ key: true, label: "ERR_INVALID_JURISDICTION" });
-      return;
-    }
-    data.Jurisdictions = data.Jurisdictions.map(juris => {
-      return {
-        ...juris,
-        hierarchy: "COURT_DISTRICT_HIERARCHY",
-        boundaryType: "state",
-        boundary: tenantId
-      };
-    });
-    let roles = data?.Jurisdictions?.map((ele) => {
-      return ele.roles?.map((item) => {
-        item["tenantId"] = ele.boundary;
-        return item;
-      });
+    // if (
+    //   !Object.values(
+    //     data.Jurisdictions.reduce((acc, sum) => {
+    //       if (sum && sum?.tenantId) {
+    //         acc[sum.tenantId] = acc[sum.tenantId] ? acc[sum.tenantId] + 1 : 1;
+    //       }
+    //       return acc;
+    //     }, {})
+    //   ).every((s) => s == 1)
+    // ) {
+    //   setShowToast({ key: true, label: "ERR_INVALID_JURISDICTION" });
+    //   return;
+    // }
+    // data.Jurisdictions = data.Jurisdictions.map((juris) => {
+    //   return {
+    //     ...juris,
+    //     hierarchy: "COURT_DISTRICT_HIERARCHY",
+    //     boundaryType: "state",
+    //     boundary: tenantId,
+    //   };
+    // });
+    let roles = data?.Assignments?.map((ele) => {
+      return ele.roles;
     });
 
     const mappedroles = [].concat.apply([], roles);
@@ -178,17 +217,17 @@ const CreateEmployee = () => {
         tenantId: tenantId,
         employeeStatus: "EMPLOYED",
         assignments: data?.Assignments,
-        // code: data?.SelectEmployeeId?.code ? data?.SelectEmployeeId?.code : undefined,
+        code: data?.SelectEmployeeId?.code ? data?.SelectEmployeeId?.code : undefined,
         // dateOfAppointment: new Date(data?.SelectDateofEmployment?.dateOfAppointment).getTime(),
         employeeType: data?.SelectEmployeeType?.code,
-        jurisdictions: data?.Jurisdictions,
+        jurisdictions: [{ hierarchy: "COURT_DISTRICT_HIERARCHY", boundaryType: "state", boundary: tenantId, tenantId: tenantId }], //data?.Jurisdictions,
         user: {
           mobileNumber: data?.SelectEmployeePhoneNumber?.mobileNumber,
           name: data?.SelectEmployeeName?.employeeName,
           // correspondenceAddress: data?.SelectEmployeeCorrespondenceAddress?.correspondenceAddress,
           emailId: data?.SelectEmployeeEmailId?.emailId ? data?.SelectEmployeeEmailId?.emailId : undefined,
           // gender: data?.SelectEmployeeGender?.gender.code,
-          dob: new Date(data?.SelectDateofBirthEmployment?.dob).getTime(),
+          // dob: new Date(data?.SelectDateofBirthEmployment?.dob).getTime(),
           roles: mappedroles,
           tenantId: tenantId,
         },
@@ -198,7 +237,7 @@ const CreateEmployee = () => {
       },
     ];
     /* use customiseCreateFormData hook to make some chnages to the Employee object */
-      Employees=Digit?.Customizations?.HRMS?.customiseCreateFormData?Digit.Customizations.HRMS.customiseCreateFormData(data,Employees):Employees;
+    Employees = Digit?.Customizations?.HRMS?.customiseCreateFormData ? Digit.Customizations.HRMS.customiseCreateFormData(data, Employees) : Employees;
 
     if (data?.SelectEmployeeId?.code && data?.SelectEmployeeId?.code?.trim().length > 0) {
       Digit.HRMSService.search(tenantId, null, { codes: data?.SelectEmployeeId?.code }).then((result, err) => {
@@ -216,15 +255,21 @@ const CreateEmployee = () => {
   if (isLoading) {
     return <Loader />;
   }
-  const config =mdmsData?.config?mdmsData.config: newConfig;
+  const config = mdmsData?.config ? mdmsData.config : newConfig;
   return (
     <div>
-      <div style={isMobile ? {marginLeft: "-12px", fontFamily: "calibri", color: "#FF0000"} :{ marginLeft: "15px", fontFamily: "calibri", color: "#FF0000" }}>
+      <div
+        style={
+          isMobile
+            ? { marginLeft: "-12px", fontFamily: "calibri", color: "#FF0000" }
+            : { marginLeft: "15px", fontFamily: "calibri", color: "#FF0000" }
+        }
+      >
         <Header>{t("HR_COMMON_CREATE_EMPLOYEE_HEADER")}</Header>
       </div>
       <FormComposer
         // defaultValues={defaultValues}
-        defaultValues = {sessionFormData}
+        defaultValues={sessionFormData}
         heading={t("")}
         config={config}
         onSubmit={onSubmit}

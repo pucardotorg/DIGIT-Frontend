@@ -70,7 +70,7 @@ const EditForm = ({ tenantId, data }) => {
       },
     },
 
-    SelectDateofBirthEmployment: { dob: convertEpochToDate(data?.user?.dob) },
+    // SelectDateofBirthEmployment: { dob: convertEpochToDate(data?.user?.dob) },
     Jurisdictions: data?.jurisdictions.map((ele, index) => {
       return Object.assign({}, ele, {
         key: index,
@@ -196,7 +196,7 @@ const EditForm = ({ tenantId, data }) => {
     requestdata.jurisdictions = input?.Jurisdictions;
     requestdata.user.emailId = input?.SelectEmployeeEmailId?.emailId ? input?.SelectEmployeeEmailId?.emailId : undefined;
     requestdata.user.gender = input?.SelectEmployeeGender?.gender.code;
-    requestdata.user.dob = Date.parse(input?.SelectDateofBirthEmployment?.dob);
+    // requestdata.user.dob = Date.parse(input?.SelectDateofBirthEmployment?.dob);
     requestdata.user.mobileNumber = input?.SelectEmployeePhoneNumber?.mobileNumber;
     requestdata["user"]["name"] = input?.SelectEmployeeName?.employeeName;
     requestdata.user.correspondenceAddress = input?.SelectEmployeeCorrespondenceAddress?.correspondenceAddress;

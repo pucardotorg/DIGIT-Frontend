@@ -20,12 +20,12 @@ export const newConfig = [
       //   key: "SelectEmployeeGender",
       //   withoutLabel: true,
       // },
-      {
-        type: "component",
-        component: "SelectDateofBirthEmployment",
-        key: "SelectDateofBirthEmployment",
-        withoutLabel: true,
-      },
+      // {
+      //   type: "component",
+      //   component: "SelectDateofBirthEmployment",
+      //   key: "SelectDateofBirthEmployment",
+      //   withoutLabel: true,
+      // },
       {
         type: "component",
         component: "SelectEmployeeEmailId",
@@ -55,37 +55,37 @@ export const newConfig = [
       //   key: "SelectDateofEmployment",
       //   withoutLabel: true,
       // },
-      // {
-      //   type: "component",
-      //   component: "SelectEmployeeId",
-      //   key: "SelectEmployeeId",
-      //   withoutLabel: true,
-      // },
-
-      // {
-      //   type: "component",
-      //   component: "HRBanner",
-      //   key: "Banner1",
-      //   withoutLabel: true,
-      //   texts: {
-      //     headerCaption: "Info",
-      //     header: "HR_EMP_ID_MESSAGE",
-      //   },
-      // },
-    ],
-  },
-  {
-    head: "HR_JURISDICTION_DETAILS_HEADER",
-    body: [
       {
         type: "component",
-        isMandatory: true,
-        component: "Jurisdictions",
-        key: "Jurisdictions",
+        component: "SelectEmployeeId",
+        key: "SelectEmployeeId",
         withoutLabel: true,
+      },
+
+      {
+        type: "component",
+        component: "HRBanner",
+        key: "Banner1",
+        withoutLabel: true,
+        texts: {
+          headerCaption: "Info",
+          header: "HR_EMP_ID_MESSAGE",
+        },
       },
     ],
   },
+  // {
+  //   head: "HR_JURISDICTION_DETAILS_HEADER",
+  //   body: [
+  //     {
+  //       type: "component",
+  //       isMandatory: true,
+  //       component: "Jurisdictions",
+  //       key: "Jurisdictions",
+  //       withoutLabel: true,
+  //     },
+  //   ],
+  // },
 
   {
     head: "HR_ASSIGN_DET_HEADER",
@@ -96,7 +96,7 @@ export const newConfig = [
         key: "Banner2",
         withoutLabel: true,
         texts: {
-          nosideText:true,
+          nosideText: true,
           headerCaption: "Info",
           header: "HR_ASSIGN_DET_SUB_HEADER",
         },
