@@ -100,7 +100,11 @@ const EditForm = ({ tenantId, data }) => {
         courtroom: {
           code: ele.courtroom,
           i18key: "COMMON_MASTERS_COURT_ROOM_" + ele.courtroom,
+        }, district: {
+          code: ele?.district,
+          i18key: ele.district ? "COMMON_MASTERS_DISTRICT_" + ele.district : null,
         },
+        roles: ele?.roles || [],
       });
     }),
   };

@@ -11,7 +11,7 @@ const CreateEmployee = () => {
   const [mobileNumber, setMobileNumber] = useState(null);
   const [showToast, setShowToast] = useState(null);
   const [phonecheck, setPhonecheck] = useState(false);
-  const [prevFormData , setPrevFormData] = useState(null);
+  const [prevFormData, setPrevFormData] = useState(null);
   // const [checkfield, setcheck] = useState(false);
   const { t } = useTranslation();
   const history = useHistory();
@@ -37,8 +37,6 @@ const CreateEmployee = () => {
     }
   );
 
-  
-  console.log("employeeRoleMapping", employeeRoleMapping);
   const [mutationHappened, setMutationHappened, clear] = Digit.Hooks.useSessionStorage("EMPLOYEE_HRMS_MUTATION_HAPPENED", false);
   const [errorInfo, setErrorInfo, clearError] = Digit.Hooks.useSessionStorage("EMPLOYEE_HRMS_ERROR_DATA", false);
   const [successData, setsuccessData, clearSuccessData] = Digit.Hooks.useSessionStorage("EMPLOYEE_HRMS_MUTATION_SUCCESS_DATA", false);
@@ -102,38 +100,27 @@ const CreateEmployee = () => {
     }
     const selectedEmployeetype = formData?.SelectEmployeeType?.code;
     const prevEmployeeType = prevFormData?.SelectEmployeeType?.code;
-
-    console.log(formData);
-    
-    // for (let i = 0; i < formData?.Jurisdictions?.length; i++) {
-    //   let key = formData?.Jurisdictions[i];
-    //   if (!(key?.boundary && key?.boundaryType && key?.hierarchy && key?.tenantId && key?.roles?.length > 0)) {
-    //     setcheck(false);
-    //     break;
-    //   } else {
-    //     setcheck(true);
-    //   }
-    // }
     const roleMapping = employeeRoleMapping?.["egov-hrms"]?.EmployeeRolesMapping;
-
-
     let setassigncheck = false;
     for (let i = 0; i < formData?.Assignments?.length; i++) {
-      if(prevEmployeeType !== selectedEmployeetype){
-        console.log("fdfnfsfnn");
-        
-        console.log(roleMapping?.map((e) => e.code === selectedEmployeetype));
+      if (prevEmployeeType !== selectedEmployeetype) {
+        const filteredRoleMapping = roleMapping.filter((role) => role.employeeCode === selectedEmployeetype);
+        const mappedRoles = filteredRoleMapping.flatMap(
+          (role) =>
+            role.roleCodes
+              .map((roleItem) => {
+                return roleItem
+                  ? {
+                      code: roleItem,
+                      name: roleItem || " ",
+                      labelKey: "ACCESSCONTROL_ROLES_ROLES_" + roleItem,
+                    }
+                  : null;
+              })
+              .filter((item) => item !== null) 
+        );
         let updatedAssignedment = formData?.Assignments;
-        updatedAssignedment[i].roles = [
-          {
-              "code": "ADVOCATE_APPLICATION_VIEWER",
-              "name": "ADVOCATE_APPLICATION_VIEWER",
-              "labelKey": "ACCESSCONTROL_ROLES_ROLES_ADVOCATE_APPLICATION_VIEWER"
-          }
-          
-      ]//roleMapping?.map((e) => e.code === selectedEmployeetype);
-      ;
-          console.log(updatedAssignedment,"upp");
+        updatedAssignedment[i].roles =mappedRoles;
         setValue("Assignments", updatedAssignedment);
         setPrevFormData(formData);
         formData.Assignments = updatedAssignedment;
@@ -145,8 +132,7 @@ const CreateEmployee = () => {
           key.courtEstablishment &&
           key.designation &&
           key.courtroom &&
-          key.fromDate &&
-          (formData?.Assignments[i].toDate || formData?.Assignments[i]?.isCurrentAssignment)
+          key.fromDate
         )
       ) {
         setassigncheck = false;

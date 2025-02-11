@@ -8,9 +8,40 @@ import {
   MultiSelectDropdown,
   RemoveableTag,
 } from "@egovernments/digit-ui-react-components";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import cleanup from "../Utils/cleanup";
 import { convertEpochToDate } from "../Utils/index";
+
+// Function to check if two objects are equal
+function deepEqual(obj1, obj2) {
+  if (obj1 === obj2) return true; // Handle identical references and primitive values
+
+  if (typeof obj1 !== "object" || typeof obj2 !== "object" || obj1 === null || obj2 === null) {
+    return false; // Handle non-objects and null values
+  }
+
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  if (keys1.length !== keys2.length) return false; // Different number of keys
+
+  for (const key of keys1) {
+    if (!keys2.includes(key)) return false; // Key mismatch
+    if (!deepEqual(obj1[key], obj2[key])) return false; // Recursive comparison
+  }
+
+  return true;
+}
+
+function compareArrays(arr1, arr2) {
+  if (arr1.length !== arr2.length) return false;
+
+  for (let i = 0; i < arr1.length; i++) {
+    if (!deepEqual(arr1[i], arr2[i])) return false;
+  }
+
+  return true;
+}
 
 const makeDefaultValues = (sessionFormData) => {
   return sessionFormData?.Assignments?.map((ele, index) => {
@@ -45,6 +76,7 @@ const Assignments = ({ t, config, onSelect, userType, formData }) => {
   const { data: data = {}, isLoading } = Digit.Hooks.hrms.useHrmsMDMS(tenantId, "egov-hrms", "HRMSRolesandDesignation") || {};
   // const [currentassignemtDate, setCurrentAssiginmentDate] = useState(null);
 
+  const ref = useRef(null);
   const employeeCreateSession = Digit.Hooks.useSessionStorage("NEW_EMPLOYEE_CREATE", {});
   const [sessionFormData, setSessionFormData, clearSessionFormData] = employeeCreateSession;
   const isEdit = window.location.href.includes("hrms/edit");
@@ -68,27 +100,30 @@ const Assignments = ({ t, config, onSelect, userType, formData }) => {
   );
 
   useEffect(() => {
-    console.log("checking");
-    
-    // setassignments(
-    //   makeDefaultValues(sessionFormData) ||
-    //     formData?.Assignments || [
-    //       {
-    //         key: 1,
-    //         fromDate: undefined,
-    //         toDate: undefined,
-    //         // isCurrentAssignment: false,
-    //         courtEstablishment: null,
-    //         designation: null,
-    //         district: null,
-    //         courtroom: null,
-    //         roles: [],
-    //       },
-    //     ]
-    // );
-  }, [sessionFormData]);
+    ref.current = setTimeout(() => {
+      const newAssignments = [];
+      let shouldUpdate = false;
+      for (let i = 0; i < (formData?.Assignments || []).length; i++) {
+        let curr = formData?.Assignments[i];
+        let currAssn = assignments[i];
+        let newAssignment = { ...curr, ...currAssn, roles: curr.roles || currAssn.roles || [] };
+        if (!compareArrays(curr.roles || [], assignments[i].roles || [])) {
+          shouldUpdate = true;
+          newAssignment = { ...newAssignment, roles: curr.roles || [] };
+        }
+        newAssignments.push(newAssignment);
+      }
 
-  // console.log(assignments, sessionFormData, "assignments");
+      if (shouldUpdate) {
+        setassignments(newAssignments);
+      }
+
+      return () => {
+        clearTimeout(ref.current);
+      };
+    }, 0);
+  }, [formData?.SelectEmployeeType?.code, formData?.Assignments]);
+
   const reviseIndexKeys = () => {
     setassignments((prev) => prev.map((unit, index) => ({ ...unit, key: index })));
   };
@@ -207,9 +242,9 @@ const Assignments = ({ t, config, onSelect, userType, formData }) => {
     });
   }
   function getroledata() {
-    return data?.MdmsRes?.["ACCESSCONTROL-ROLES"].roles
+    return data?.MdmsRes?.["ACCESSCONTROL-ROLES"]?.roles
       .map((role) => {
-        return { code: role.code, name: role?.name ? role?.name : " ", labelKey: "ACCESSCONTROL_ROLES_ROLES_" + role.code };
+        return role?.code ? { code: role?.code, name: role?.name ? role?.name : " ", labelKey: "ACCESSCONTROL_ROLES_ROLES_" + role?.code } : null;
       })
       .sort((a, b) => {
         const labelKeyA = t(a?.labelKey) || "";
@@ -309,7 +344,6 @@ function Assignment({
 
     // Find the corresponding court establishment for the selected courtroom
     const courtEstablishmentData = getCourtEstablishment();
-    console.log(courtEstablishmentData, "courtEstablishmentData");
 
     const correspondingEstablishment = courtEstablishmentData?.find((est) => est.code === value.establishment);
 
@@ -380,8 +414,6 @@ function Assignment({
   const getFilteredCourtEstablishments = () => {
     const selectedDistrict = assignment?.district;
     const courtEstablishmentData = getCourtEstablishment();
-    console.log(selectedDistrict, courtEstablishmentData, "selectedDistrict, courtEstablishmentData");
-
     if (!selectedDistrict) return courtEstablishmentData;
     return courtEstablishmentData?.filter((ele) => ele.district === selectedDistrict.code);
   };
@@ -492,6 +524,22 @@ function Assignment({
             />
           </div>
         </LabelFieldPair>
+        <LabelFieldPair>
+          <CardLabel></CardLabel>
+          <div className="field">
+            <span
+              style={{
+                color: "gray",
+                width: "100%",
+                border: "none",
+                background: "none",
+                justifyContent: "start",
+              }}
+            >
+              {t("HRMS_EMP_ID_DISCRIPTION")}
+            </span>
+          </div>
+        </LabelFieldPair>
 
         {/* <LabelFieldPair>
           <CardLabel className="card-label-smaller" style={{ color: "white" }}>
@@ -573,8 +621,8 @@ function Assignment({
               t={t}
             />
             <div className="tag-container">
-              {assignment?.roles.length > 0 &&
-                assignment?.roles.map((value, index) => {
+              {assignment?.roles?.length > 0 &&
+                assignment?.roles?.map((value, index) => {
                   return <RemoveableTag key={index} text={`${t(value["labelKey"]).slice(0, 22)} ...`} onClick={() => onRemove(index, value)} />;
                 })}
             </div>
