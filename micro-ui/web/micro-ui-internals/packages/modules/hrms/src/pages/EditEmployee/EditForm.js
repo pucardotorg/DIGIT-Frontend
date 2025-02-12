@@ -13,6 +13,7 @@ const EditForm = ({ tenantId, data }) => {
   const [mobileNumber, setMobileNumber] = useState(null);
   const [phonecheck, setPhonecheck] = useState(false);
   const [checkfield, setcheck] = useState(false);
+  const [jurisdictions, setJurisdictions] = useState(null);
   const { data: mdmsData, isLoading } = Digit.Hooks.useCommonMDMS(Digit.ULBService.getStateId(), "egov-hrms", ["CommonFieldsConfig"], {
     select: (data) => {
       return {
@@ -50,6 +51,7 @@ const EditForm = ({ tenantId, data }) => {
     } else {
       setPhonecheck(false);
     }
+    setJurisdictions(data?.jurisdictions);
   }, [mobileNumber]);
 
   const defaultValues = {
@@ -69,8 +71,7 @@ const EditForm = ({ tenantId, data }) => {
         name: `COMMON_GENDER_${data?.user?.gender}`,
       },
     },
-
-    SelectDateofBirthEmployment: { dob: convertEpochToDate(data?.user?.dob) },
+    // SelectDateofBirthEmployment: { dob: convertEpochToDate(data?.user?.dob) },
     Jurisdictions: data?.jurisdictions.map((ele, index) => {
       return Object.assign({}, ele, {
         key: index,
@@ -80,7 +81,6 @@ const EditForm = ({ tenantId, data }) => {
         },
         boundaryType: { label: ele.boundaryType, i18text: `EGOV_LOCATION_BOUNDARYTYPE_${ele.boundaryType.toUpperCase()}` },
         boundary: { code: ele.boundary },
-        roles: data?.user?.roles.filter((item) => item.tenantId == ele.boundary),
       });
     }),
     Assignments: data?.assignments.map((ele, index) => {
@@ -101,6 +101,11 @@ const EditForm = ({ tenantId, data }) => {
           code: ele.courtroom,
           i18key: "COMMON_MASTERS_COURT_ROOM_" + ele.courtroom,
         },
+        district: {
+          code: ele?.district,
+          i18key: ele.district ? "COMMON_MASTERS_DISTRICT_" + ele.district : null,
+        },
+        roles: ele?.roles || [],
       });
     }),
   };
@@ -120,15 +125,15 @@ const EditForm = ({ tenantId, data }) => {
       setMobileNumber(formData?.SelectEmployeePhoneNumber?.mobileNumber);
     }
 
-    for (let i = 0; i < formData?.Jurisdictions?.length; i++) {
-      let key = formData?.Jurisdictions[i];
-      if (!(key?.boundary && key?.boundaryType && key?.hierarchy && key?.tenantId && key?.roles?.length > 0)) {
-        setcheck(false);
-        break;
-      } else {
-        setcheck(true);
-      }
-    }
+    // for (let i = 0; i < formData?.Jurisdictions?.length; i++) {
+    //   let key = formData?.Jurisdictions[i];
+    //   if (!(key?.boundary && key?.boundaryType && key?.hierarchy && key?.tenantId && key?.roles?.length > 0)) {
+    //     setcheck(false);
+    //     break;
+    //   } else {
+    //     setcheck(true);
+    //   }
+    // }
 
     let setassigncheck = false;
     for (let i = 0; i < formData?.Assignments?.length; i++) {
@@ -153,7 +158,6 @@ const EditForm = ({ tenantId, data }) => {
     if (
       formData?.SelectEmployeeName?.employeeName &&
       formData?.SelectEmployeePhoneNumber?.mobileNumber &&
-      checkfield &&
       setassigncheck &&
       phonecheck &&
       checkMailNameNum(formData)
@@ -165,38 +169,36 @@ const EditForm = ({ tenantId, data }) => {
   };
 
   const onSubmit = (input) => {
-    if (input.Jurisdictions.filter((juris) => juris.tenantId == tenantId && juris.isActive !== false).length == 0) {
-      setShowToast({ key: true, label: "ERR_BASE_TENANT_MANDATORY" });
-      return;
-    }
-    if (
-      !Object.values(
-        input.Jurisdictions.reduce((acc, sum) => {
-          if (sum && sum?.tenantId) {
-            acc[sum.tenantId] = acc[sum.tenantId] ? acc[sum.tenantId] + 1 : 1;
-          }
-          return acc;
-        }, {})
-      ).every((s) => s == 1)
-    ) {
-      setShowToast({ key: true, label: "ERR_INVALID_JURISDICTION" });
-      return;
-    }
-    let roles = input?.Jurisdictions?.map((ele) => {
-      return ele.roles?.map((item) => {
-        item["tenantId"] = ele.boundary;
-        return item;
-      });
+    // if (input.Jurisdictions.filter((juris) => juris.tenantId == tenantId && juris.isActive !== false).length == 0) {
+    //   setShowToast({ key: true, label: "ERR_BASE_TENANT_MANDATORY" });
+    //   return;
+    // }
+    // if (
+    //   !Object.values(
+    //     input.Jurisdictions.reduce((acc, sum) => {
+    //       if (sum && sum?.tenantId) {
+    //         acc[sum.tenantId] = acc[sum.tenantId] ? acc[sum.tenantId] + 1 : 1;
+    //       }
+    //       return acc;
+    //     }, {})
+    //   ).every((s) => s == 1)
+    // ) {
+    //   setShowToast({ key: true, label: "ERR_INVALID_JURISDICTION" });
+    //   return;
+    // }
+    let roles = input?.Assignments?.map((ele) => {
+      return ele.roles;
     });
     let requestdata = Object.assign({}, data);
     roles = [].concat.apply([], roles);
     requestdata.assignments = input?.Assignments;
     requestdata.dateOfAppointment = Date.parse(input?.SelectDateofEmployment?.dateOfAppointment);
     requestdata.code = input?.SelectEmployeeId?.code ? input?.SelectEmployeeId?.code : requestdata?.user?.userName;
-    requestdata.jurisdictions = input?.Jurisdictions;
-    requestdata.user.emailId = input?.SelectEmployeeEmailId?.emailId ? input?.SelectEmployeeEmailId?.emailId : undefined;
+    requestdata.jurisdictions = jurisdictions;
+    // (requestdata.jurisdictions = [{ hierarchy: "COURT_DISTRICT_HIERARCHY", boundaryType: "state", boundary: tenantId, tenantId: tenantId }]), //data?.Jurisdictions,
+      (requestdata.user.emailId = input?.SelectEmployeeEmailId?.emailId ? input?.SelectEmployeeEmailId?.emailId : undefined);
     requestdata.user.gender = input?.SelectEmployeeGender?.gender.code;
-    requestdata.user.dob = Date.parse(input?.SelectDateofBirthEmployment?.dob);
+    // requestdata.user.dob = Date.parse(input?.SelectDateofBirthEmployment?.dob);
     requestdata.user.mobileNumber = input?.SelectEmployeePhoneNumber?.mobileNumber;
     requestdata["user"]["name"] = input?.SelectEmployeeName?.employeeName;
     requestdata.user.correspondenceAddress = input?.SelectEmployeeCorrespondenceAddress?.correspondenceAddress;

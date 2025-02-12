@@ -50,7 +50,7 @@ const initRequestBody = (tenantId) => ({
     moduleDetails: [
       {
         moduleName: "common-masters",
-        masterDetails: [{ name: "CourtEstablishment" }, { name: "Court_Rooms" },{ name: "Designation" }, { name: "StateInfo" }, { name: "wfSlaConfig" }, { name: "uiHomePage" }],
+        masterDetails: [{ name: "CourtEstablishment" },{ name: "District" }, { name: "Court_Rooms" },{ name: "Designation" }, { name: "StateInfo" }, { name: "wfSlaConfig" }, { name: "uiHomePage" }],
       },
       {
         moduleName: "tenant",
@@ -727,6 +727,7 @@ const getHrmsEmployeeRolesandDesignations = () => ({
       moduleName: "common-masters",
       masterDetails: [
         { name: "CourtEstablishment", filter: "[?(@.active == true)]" },
+        { name: "District", filter: "[?(@.active == true)]" },
         { name: "Designation", filter: "[?(@.active == true)]" },
         { name: "Court_Rooms", filter: "[?(@.active == true)]" },
       ],

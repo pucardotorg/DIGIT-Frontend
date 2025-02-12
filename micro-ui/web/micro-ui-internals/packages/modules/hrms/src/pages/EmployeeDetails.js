@@ -158,10 +158,7 @@ const Details = () => {
                     <Row label={t("HR_HIERARCHY_LABEL")} text={t(element?.hierarchy ? `EGOV_LOCATION_TENANTBOUNDARY_${element?.hierarchy}` : "NA")} textStyle={{ whiteSpace: "pre" }} />
                     <Row label={t("HR_BOUNDARY_TYPE_LABEL")} text={t(Digit.Utils.locale.convertToLocale(element?.boundaryType, 'EGOV_LOCATION_BOUNDARYTYPE'))} textStyle={{ whiteSpace: "pre" }} />
                     <Row label={t("HR_BOUNDARY_LABEL")} text={t(element?.boundary)} />
-                    <Row
-                      label={t("HR_ROLE_LABEL")}
-                      text={data?.Employees?.[0]?.user.roles.filter((ele) => ele.tenantId == element?.boundary).map((ele) => t(`ACCESSCONTROL_ROLES_ROLES_` + ele?.code))}
-                    />
+                  
                   </StatusTable>
                 );
               })
@@ -190,8 +187,11 @@ const Details = () => {
                   text={element?.isCurrentAssignment ? "Currently Working Here" : convertEpochFormateToDate(element?.toDate)}
                   textStyle={{ whiteSpace: "pre" }}
                 />
+                <Row label={t("HR_DISTRICT_LABEL")} text={t("COMMON_MASTERS_DISTRICT_" + element?.district)} />
                 <Row label={t("HR_COURT_ESTABLISHMENT_LABEL")} text={t("COMMON_MASTERS_COURT_ESTABLISHMENT_" + element?.courtEstablishment)} />
+                <Row label={t("HR_COURTROOM_LABEL")} text={t("COMMON_MASTERS_COURT_ROOM_" + element?.courtroom)} />
                 <Row label={t("HR_DESG_LABEL")} text={t("COMMON_MASTERS_DESIGNATION_" + element?.designation)} />
+                <Row label={t("HR_ROLE_LABEL")} text={data?.Employees?.[0]?.user.roles.map((ele) => t(`ACCESSCONTROL_ROLES_ROLES_` + ele?.code))} />
               </StatusTable>
             ))}
           </Card>
