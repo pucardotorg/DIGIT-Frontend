@@ -508,7 +508,6 @@ function Assignment({
         <LabelFieldPair>
           <CardLabel className={assignment?.isCurrentAssignment ? "card-label-smaller" : "card-label-smaller"}>
             {t("HR_ASMT_TO_DATE_LABEL")}
-            {assignment?.isCurrentAssignment ? "" : " * "}{" "}
           </CardLabel>
           <div className="field">
             <DatePicker
@@ -623,7 +622,7 @@ function Assignment({
             <div className="tag-container">
               {assignment?.roles?.length > 0 &&
                 assignment?.roles?.map((value, index) => {
-                  return <RemoveableTag key={index} text={`${t(value["labelKey"]).slice(0, 22)} ...`} onClick={() => onRemove(index, value)} />;
+                  return <RemoveableTag key={index} text={`${t(value["labelKey"])} ...`} onClick={() => onRemove(index, value)} />;
                 })}
             </div>
           </div>
