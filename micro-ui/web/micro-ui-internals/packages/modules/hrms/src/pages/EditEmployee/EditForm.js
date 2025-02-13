@@ -105,10 +105,17 @@ const EditForm = ({ tenantId, data }) => {
           code: ele?.district,
           i18key: ele.district ? "COMMON_MASTERS_DISTRICT_" + ele.district : null,
         },
-        roles: ele?.roles || [],
+        roles:
+          ele?.roles ||
+          data?.user?.roles.map((role) => ({
+            code: role?.code,
+            name: role?.name ? role?.name : " ",
+            labelKey: "ACCESSCONTROL_ROLES_ROLES_" + role?.code,
+          })),
       });
     }),
   };
+
 
   const checkMailNameNum = (formData) => {
     const email = formData?.SelectEmployeeEmailId?.emailId || "";
@@ -138,14 +145,7 @@ const EditForm = ({ tenantId, data }) => {
     let setassigncheck = false;
     for (let i = 0; i < formData?.Assignments?.length; i++) {
       let key = formData?.Assignments[i];
-      if (
-        !(
-          key.courtEstablishment &&
-          key.designation &&
-          key.fromDate &&
-          (formData?.Assignments[i].toDate || formData?.Assignments[i]?.isCurrentAssignment)
-        )
-      ) {
+      if (!(key.courtEstablishment && key.designation && key.fromDate)) {
         setassigncheck = false;
         break;
       } else if (formData?.Assignments[i].toDate == null && formData?.Assignments[i]?.isCurrentAssignment == false) {
@@ -196,7 +196,7 @@ const EditForm = ({ tenantId, data }) => {
     requestdata.code = input?.SelectEmployeeId?.code ? input?.SelectEmployeeId?.code : requestdata?.user?.userName;
     requestdata.jurisdictions = jurisdictions;
     // (requestdata.jurisdictions = [{ hierarchy: "COURT_DISTRICT_HIERARCHY", boundaryType: "state", boundary: tenantId, tenantId: tenantId }]), //data?.Jurisdictions,
-      (requestdata.user.emailId = input?.SelectEmployeeEmailId?.emailId ? input?.SelectEmployeeEmailId?.emailId : undefined);
+    requestdata.user.emailId = input?.SelectEmployeeEmailId?.emailId ? input?.SelectEmployeeEmailId?.emailId : undefined;
     requestdata.user.gender = input?.SelectEmployeeGender?.gender.code;
     // requestdata.user.dob = Date.parse(input?.SelectDateofBirthEmployment?.dob);
     requestdata.user.mobileNumber = input?.SelectEmployeePhoneNumber?.mobileNumber;
