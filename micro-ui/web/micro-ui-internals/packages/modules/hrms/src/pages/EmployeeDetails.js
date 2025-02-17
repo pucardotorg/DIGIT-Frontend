@@ -72,7 +72,11 @@ const Details = () => {
   if (isLoading) {
     return <Loader />;
   }
-
+  const memuStyles = `
+  .menu-wrap div p {
+  margin : 0;
+  }
+  `;
   return (
     <React.Fragment>
       <div
@@ -241,6 +245,7 @@ const Details = () => {
         <ActionModal t={t} action={selectedAction} tenantId={tenantId} applicationData={data} closeModal={closeModal} submitAction={submitAction} />
       ) : null}
       <ActionBar>
+        <style>{memuStyles} </style>
         {displayMenu && data ? (
           <Menu
             localeKeyPrefix="HR"
