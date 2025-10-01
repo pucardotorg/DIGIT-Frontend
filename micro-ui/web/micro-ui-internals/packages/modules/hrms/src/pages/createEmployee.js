@@ -105,36 +105,31 @@ const CreateEmployee = () => {
     for (let i = 0; i < formData?.Assignments?.length; i++) {
       if (prevEmployeeType !== selectedEmployeetype) {
         const filteredRoleMapping = roleMapping.filter((role) => role.employeeCode === selectedEmployeetype);
-        const mappedRoles = filteredRoleMapping.flatMap(
-          (role) =>
-            role.roleCodes
-              .map((roleItem) => {
-                return roleItem
+        const mappedRoles = filteredRoleMapping.flatMap((role) =>
+          role.courtRoleMappings?.flatMap((court) =>
+            court.roleCodes
+              .map((roleItem) =>
+                roleItem
                   ? {
                       code: roleItem,
                       name: roleItem || " ",
                       labelKey: "ACCESSCONTROL_ROLES_ROLES_" + roleItem,
+                      courtId: court.courtId,
                     }
-                  : null;
-              })
-              .filter((item) => item !== null) 
+                  : null
+              )
+              .filter((item) => item !== null)
+          )
         );
         let updatedAssignedment = formData?.Assignments;
-        updatedAssignedment[i].roles =mappedRoles;
+        updatedAssignedment[i].roles = mappedRoles;
         setValue("Assignments", updatedAssignedment);
         setPrevFormData(formData);
         formData.Assignments = updatedAssignedment;
         setSessionFormData({ ...sessionFormData, ...formData });
       }
       let key = formData?.Assignments[i];
-      if (
-        !(
-          key.courtEstablishment &&
-          key.designation &&
-          key.courtroom &&
-          key.fromDate
-        )
-      ) {
+      if (!(key.courtEstablishment && key.designation && key.courtroom && key.fromDate)) {
         setassigncheck = false;
         break;
       } else if (formData?.Assignments[i].toDate == null && formData?.Assignments[i]?.isCurrentAssignment == false) {
