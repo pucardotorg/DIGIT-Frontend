@@ -1,16 +1,8 @@
-import {
-  CardLabel,
-  CheckBox,
-  DatePicker,
-  Dropdown,
-  LabelFieldPair,
-  Loader,
-  MultiSelectDropdown,
-  RemoveableTag,
-} from "@egovernments/digit-ui-react-components";
+import { CardLabel, DatePicker, Dropdown, LabelFieldPair, Loader, RemoveableTag } from "@egovernments/digit-ui-react-components";
 import React, { useEffect, useState, useRef } from "react";
 import cleanup from "../Utils/cleanup";
 import { convertEpochToDate } from "../Utils/index";
+import { CustomMultiSelect } from "./CustomMultiSelect";
 
 // Function to check if two objects are equal
 function deepEqual(obj1, obj2) {
@@ -609,9 +601,8 @@ function Assignment({
         <LabelFieldPair>
           <CardLabel className="card-label-smaller">{t("HR_COMMON_TABLE_COL_ROLE")} *</CardLabel>
           <div className="form-field">
-            <MultiSelectDropdown
+            <CustomMultiSelect
               className="form-field"
-              isMandatory={true}
               defaultUnit="Selected"
               selected={assignment?.roles || []}
               options={getroledata()}
