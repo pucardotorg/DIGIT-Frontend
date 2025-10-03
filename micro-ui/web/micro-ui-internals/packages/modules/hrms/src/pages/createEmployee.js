@@ -1,5 +1,5 @@
 import { FormComposer, Toast, Loader, Header } from "@egovernments/digit-ui-react-components";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { newConfig } from "../components/config/config";
@@ -12,6 +12,7 @@ const CreateEmployee = () => {
   const [showToast, setShowToast] = useState(null);
   const [phonecheck, setPhonecheck] = useState(false);
   const [prevFormData, setPrevFormData] = useState(null);
+  const toastTimerRef = useRef(null);
   // const [checkfield, setcheck] = useState(false);
   const { t } = useTranslation();
   const history = useHistory();
@@ -40,12 +41,30 @@ const CreateEmployee = () => {
   const [mutationHappened, setMutationHappened, clear] = Digit.Hooks.useSessionStorage("EMPLOYEE_HRMS_MUTATION_HAPPENED", false);
   const [errorInfo, setErrorInfo, clearError] = Digit.Hooks.useSessionStorage("EMPLOYEE_HRMS_ERROR_DATA", false);
   const [successData, setsuccessData, clearSuccessData] = Digit.Hooks.useSessionStorage("EMPLOYEE_HRMS_MUTATION_SUCCESS_DATA", false);
+  const [localFormData, setLocalFormData] = useState({});
 
   useEffect(() => {
     setMutationHappened(false);
     clearSuccessData();
     clearError();
   }, []);
+
+  // Auto-dismiss toast after 5 seconds
+  useEffect(() => {
+    if (showToast) {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = setTimeout(() => {
+        setShowToast(null);
+        toastTimerRef.current = null;
+      }, 5000);
+    }
+    return () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+        toastTimerRef.current = null;
+      }
+    };
+  }, [showToast]);
 
   const checkMailNameNum = (formData) => {
     const email = formData?.SelectEmployeeEmailId?.emailId || "";
@@ -55,6 +74,9 @@ const CreateEmployee = () => {
     return validEmail && name.match(Digit.Utils.getPattern("Name")); //&& address.match(Digit.Utils.getPattern("Address"));
   };
   useEffect(() => {
+    if (showToast?.key && showToast?.label === "ERR_HRMS_USER_EXIST_MOB") {
+      setShowToast(null);
+    }
     if (mobileNumber && mobileNumber.length == 10 && mobileNumber.match(Digit.Utils.getPattern("MobileNo"))) {
       setShowToast(null);
       Digit.HRMSService.search(tenantId, null, { phone: mobileNumber }).then((result, err) => {
@@ -85,12 +107,12 @@ const CreateEmployee = () => {
   //   ],
   // };
 
-  const employeeCreateSession = Digit.Hooks.useSessionStorage("NEW_EMPLOYEE_CREATE", {});
-  const [sessionFormData, setSessionFormData, clearSessionFormData] = employeeCreateSession;
+  // const employeeCreateSession = Digit.Hooks.useSessionStorage("NEW_EMPLOYEE_CREATE", {});
+  // const [sessionFormData, setSessionFormData, clearSessionFormData] = employeeCreateSession;
 
   const onFormValueChange = (setValue = true, formData) => {
-    if (!_.isEqual(sessionFormData, formData)) {
-      setSessionFormData({ ...sessionFormData, ...formData });
+    if (!_.isEqual(localFormData, formData)) {
+      setLocalFormData({ ...localFormData, ...formData });
     }
 
     if (formData?.SelectEmployeePhoneNumber?.mobileNumber) {
@@ -105,36 +127,28 @@ const CreateEmployee = () => {
     for (let i = 0; i < formData?.Assignments?.length; i++) {
       if (prevEmployeeType !== selectedEmployeetype) {
         const filteredRoleMapping = roleMapping.filter((role) => role.employeeCode === selectedEmployeetype);
-        const mappedRoles = filteredRoleMapping.flatMap(
-          (role) =>
-            role.roleCodes
-              .map((roleItem) => {
-                return roleItem
-                  ? {
-                      code: roleItem,
-                      name: roleItem || " ",
-                      labelKey: "ACCESSCONTROL_ROLES_ROLES_" + roleItem,
-                    }
-                  : null;
-              })
-              .filter((item) => item !== null) 
+        const mappedRoles = filteredRoleMapping.flatMap((role) =>
+          role.roleCodes
+            .map((roleItem) => {
+              return roleItem
+                ? {
+                    code: roleItem,
+                    name: roleItem || " ",
+                    labelKey: "ACCESSCONTROL_ROLES_ROLES_" + roleItem,
+                  }
+                : null;
+            })
+            .filter((item) => item !== null)
         );
         let updatedAssignedment = formData?.Assignments;
-        updatedAssignedment[i].roles =mappedRoles;
+        updatedAssignedment[i].roles = mappedRoles;
         setValue("Assignments", updatedAssignedment);
         setPrevFormData(formData);
         formData.Assignments = updatedAssignedment;
-        setSessionFormData({ ...sessionFormData, ...formData });
+        setLocalFormData({ ...localFormData, ...formData });
       }
       let key = formData?.Assignments[i];
-      if (
-        !(
-          key.courtEstablishment &&
-          key.designation &&
-          key.courtroom &&
-          key.fromDate
-        )
-      ) {
+      if (!(key.courtEstablishment && key.designation && key.courtroom && key.fromDate)) {
         setassigncheck = false;
         break;
       } else if (formData?.Assignments[i].toDate == null && formData?.Assignments[i]?.isCurrentAssignment == false) {
@@ -255,7 +269,7 @@ const CreateEmployee = () => {
       </div>
       <FormComposer
         // defaultValues={defaultValues}
-        defaultValues={sessionFormData}
+        defaultValues={localFormData}
         heading={t("")}
         config={config}
         onSubmit={onSubmit}
