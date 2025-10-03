@@ -393,6 +393,7 @@ function Assignment({
   };
 
   const selectrole = (e, data) => {
+    const courtId = assignment?.courtroom?.code;
     let res = [];
     e &&
       e?.map((ob) => {
@@ -401,6 +402,7 @@ function Assignment({
 
     res?.forEach((resData) => {
       resData.labelKey = "ACCESSCONTROL_ROLES_ROLES_" + resData.code;
+      resData.courtId = courtId;
     });
 
     setassignments((pre) => pre.map((item) => (item.key === assignment.key ? { ...item, roles: res } : item)));
