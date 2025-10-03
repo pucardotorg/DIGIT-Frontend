@@ -1,5 +1,5 @@
 import { FormComposer, Toast, Loader, Header } from "@egovernments/digit-ui-react-components";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { newConfig } from "../components/config/config";
@@ -12,6 +12,7 @@ const CreateEmployee = () => {
   const [showToast, setShowToast] = useState(null);
   const [phonecheck, setPhonecheck] = useState(false);
   const [prevFormData, setPrevFormData] = useState(null);
+  const toastTimerRef = useRef(null);
   // const [checkfield, setcheck] = useState(false);
   const { t } = useTranslation();
   const history = useHistory();
@@ -46,6 +47,23 @@ const CreateEmployee = () => {
     clearSuccessData();
     clearError();
   }, []);
+
+  // Auto-dismiss toast after 5 seconds
+  useEffect(() => {
+    if (showToast) {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = setTimeout(() => {
+        setShowToast(null);
+        toastTimerRef.current = null;
+      }, 5000);
+    }
+    return () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+        toastTimerRef.current = null;
+      }
+    };
+  }, [showToast]);
 
   const checkMailNameNum = (formData) => {
     const email = formData?.SelectEmployeeEmailId?.emailId || "";
@@ -117,7 +135,7 @@ const CreateEmployee = () => {
                     }
                   : null;
               })
-              .filter((item) => item !== null) 
+              .filter((item) => item !== null)
         );
         let updatedAssignedment = formData?.Assignments;
         updatedAssignedment[i].roles =mappedRoles;
