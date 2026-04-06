@@ -178,3 +178,43 @@ Digit.Hooks.hrms.useHrmsMDMS(tenantId, "egov-hrms", "HRMSRolesandDesignation")
 - Maintains compatibility with existing filter and pagination logic
 - Fully responsive design with hover states and smooth transitions
 - Semantic HTML structure (`<header>`, `<section>`) for accessibility
+
+---
+
+## Employee Details Page Redesign
+
+> Replaces DIGIT's built-in `Card`/`StatusTable`/`Row`/`ActionBar` layout with a modern, visually rich design using inline styles.
+
+### Files changed
+
+| File                           | Change                                                                                                                                                                                                          |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/pages/EmployeeDetails.js` | **Redesigned.** Modern hero header with avatar, status badge, action buttons. Section cards for personal/employment details, documents, jurisdictions, assignments. Deactivation banner for inactive employees. |
+
+### Design Features
+
+- **Hero header card** — large avatar with initials, employee name, code, type, and status badge (green ACTIVE / red INACTIVE pill). Teal gradient accent bar.
+- **Inline action buttons** — Edit (outlined teal) and Deactivate/Activate (red outlined or teal gradient) directly in the hero header, replacing the bottom ActionBar.
+- **Deactivation banner** — orange warning-style banner for inactive employees with effective date, reason, remarks, and order number.
+- **Section cards** — rounded white cards with icon headers: Personal Details, Employment Details, Documents, Jurisdictions, Assignments.
+- **Detail grid** — responsive CSS grid (`auto-fill, minmax(240px, 1fr)`) for label-value pairs.
+- **Sub-cards** — bordered cards for individual jurisdictions and assignments with teal index badges.
+- **Document cards** — clickable cards with file icon and document name, triggering download.
+- **Role tags** — pill-style tags for user roles within assignment sections.
+- **Back link** — arrow link navigating back to the employee list.
+- **Outside-click menu close** — `useRef` + `mousedown` listener for dropdown dismissal.
+
+### Data Flow
+
+Uses the same DIGIT hooks — only the presentation layer is replaced:
+
+```
+Digit.Hooks.hrms.useHRMSSearch({ codes: employeeId }, tenantId, null, isupdate)
+Digit.UploadServices.Filefetch([documentId], stateId)
+```
+
+### Sub-components
+
+- `DetailField` — label-value pair with uppercase gray label
+- `SectionCard` — white card with icon header and content body
+- `getInitials()` — extracts name initials for avatar display

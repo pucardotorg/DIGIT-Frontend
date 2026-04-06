@@ -233,6 +233,57 @@ Digit.Hooks.hrms.useHRMSSearch(searchParams, tenantId, paginationParams);
   pageSizeLimit={pageSize}
   onNextPage={fetchNextPage}
   onPrevPage={fetchPrevPage}
+  onPageSizeChange={handlePageSizeChange}
   totalRecords={totalRecords}
 />
 ```
+
+---
+
+## Employee Details Page
+
+### `EmployeeDetails.js` _(Redesigned)_
+
+Located at `src/pages/EmployeeDetails.js`. A fully custom employee details page that replaces DIGIT's built-in `Card`/`StatusTable`/`Row`/`ActionBar` layout with a modern, visually rich design using inline styles.
+
+**Route:** `/:path/details/:tenantId/:id`
+
+**Registered as:** `HRMSDetails` in `Module.js`
+
+**Design Elements:**
+
+- **Hero header card** — large avatar with initials, employee name, code, employment type, and status badge (green/red pill). Teal gradient accent bar at top.
+- **Action buttons** — Edit (outlined teal) and Deactivate/Activate (red outlined or teal gradient) buttons directly in the hero header.
+- **Deactivation banner** — orange warning-style banner shown only for inactive employees with effective date, reason, remarks, and order number.
+- **Section cards** — rounded white cards with icon headers for Personal Details, Employment Details, Documents, Jurisdictions, and Assignments.
+- **Detail grid** — responsive `auto-fill` grid layout for label-value pairs.
+- **Sub-cards** — bordered cards within sections for individual jurisdictions and assignments, with teal index badges.
+- **Document items** — clickable document cards with file icons that trigger download.
+- **Role tags** — pill-style tags for each user role within assignment cards.
+- **Back link** — arrow link to navigate back to the employee list.
+
+**Sub-components:**
+
+- **`DetailField`** — renders a label-value pair with uppercase gray label and dark value text.
+- **`SectionCard`** — renders a white card with icon header bar and content body.
+- **`getInitials()`** — extracts name initials for avatar display.
+
+**Data Integration:**
+
+```js
+// Employee data fetched by employee code
+Digit.Hooks.hrms.useHRMSSearch({ codes: employeeId }, tenantId, null, isupdate);
+
+// Document download
+Digit.UploadServices.Filefetch([documentId], stateId);
+```
+
+**Actions:**
+
+| Action     | Behavior                                                   |
+| ---------- | ---------------------------------------------------------- |
+| Edit       | Navigates to `/hrms/edit/:tenantId/:id`                    |
+| Deactivate | Opens `ActionModal` with `DEACTIVATE_EMPLOYEE_HEAD` action |
+| Activate   | Opens `ActionModal` with `ACTIVATE_EMPLOYEE_HEAD` action   |
+
+**Styling:** All styles are inline (no CSS imports) using the same teal/gray colour token system as `SearchEmployeeScreen`. Key tokens: `TEAL (#0d6a82)`, `GREEN (#16a34a)`, `RED (#dc2626)`, `ORANGE (#ea580c)`.

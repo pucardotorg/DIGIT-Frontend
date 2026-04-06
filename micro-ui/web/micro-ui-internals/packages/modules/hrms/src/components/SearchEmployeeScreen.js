@@ -507,7 +507,7 @@ const SearchEmployeeScreen = ({
               history.push(detailsLink);
             }}
           >
-            &#8942;
+            &#8594;
           </button>
         );
       },
