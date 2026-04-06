@@ -143,24 +143,27 @@ See [`src/components/README.md`](src/components/README.md) for the full componen
 
 ### Files changed
 
-| File                                     | Change                                                                                                                                 |
-| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/components/SearchEmployeeScreen.js` | **New.** Custom search screen with unified search bar, filter chips, active filter pills, avatar-enhanced table, and skeleton loading. |
-| `src/pages/Inbox.js`                     | **Modified.** Uses `SearchEmployeeScreen` instead of `DesktopInbox` for desktop view.                                                  |
+| File                                     | Change                                                                                                                                                  |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/components/CustomTable.js`          | **New.** Reusable table component with skeleton loading, pagination, column renderers. Not HRMS-specific — can be used on any screen.                   |
+| `src/components/SearchEmployeeScreen.js` | **Redesigned.** Modernised to JSX + `const`/`let` + arrow functions. Uses `CustomTable` for the results table. Semantic HTML (`<header>`, `<section>`). |
+| `src/pages/Inbox.js`                     | **Modified.** Uses `SearchEmployeeScreen` instead of `DesktopInbox` for desktop view.                                                                   |
 
 ### Design Features
 
-- **Unified search bar** - Single text input searching across name, phone, and ID fields
-- **Filter chip buttons** - Status, Role, Court Establishment, ULB with dropdown overlays
-- **Active filter pills** - Removable tags below search bar showing applied filters
-- **Enhanced table rows** - Avatar with initials, grouped name+ID, status badges, action menus
-- **Skeleton loading** - Shimmer rows for smoother perceived performance
-- **Modern pagination** - Page number buttons with Previous/Next navigation
-- **+ Create Employee button** - Prominent call-to-action in top-right corner
+- **Unified search bar** — single text input searching across name, phone, and ID fields
+- **Filter chip buttons** — Status, Role, Court Establishment, ULB with dropdown overlays
+- **Active filter pills** — removable tags below search bar showing applied filters
+- **Reusable `CustomTable`** — column-driven config with `render`/`accessor` per column, built-in skeleton rows and pagination
+- **Enhanced table rows** — avatar with initials, grouped name+ID, status badges, action menus
+- **Skeleton loading** — shimmer rows for smoother perceived performance
+- **Modern pagination** — page number buttons with Previous/Next navigation
+- **+ Create Employee button** — prominent call-to-action in top-right corner
+- **Modern JS syntax** — `const`/`let`, JSX, arrow functions, destructured props, template literals
 
 ### Data Flow
 
-The existing DIGIT hooks and API calls remain unchanged - only the presentation layer is replaced:
+The existing DIGIT hooks and API calls remain unchanged — only the presentation layer is replaced:
 
 ```
 Digit.Hooks.hrms.useHRMSSearch(searchParams, tenantId, paginationParams)
@@ -171,6 +174,7 @@ Digit.Hooks.hrms.useHrmsMDMS(tenantId, "egov-hrms", "HRMSRolesandDesignation")
 ### Technical Notes
 
 - Uses inline styles (no CSS imports) due to microbundle CSS Modules constraints
+- `CustomTable` is a generic shared component — reusable on Create Employee, Employee Details, or any future list screen
 - Maintains compatibility with existing filter and pagination logic
 - Fully responsive design with hover states and smooth transitions
-- Accessibility support with proper ARIA labels and keyboard navigation
+- Semantic HTML structure (`<header>`, `<section>`) for accessibility

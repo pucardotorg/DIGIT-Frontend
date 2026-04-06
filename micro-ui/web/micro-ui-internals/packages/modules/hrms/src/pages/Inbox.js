@@ -62,8 +62,9 @@ const Inbox = ({ parentRoute, businessService = "HRMS", initialStates = {}, filt
     setSortParams(args);
   }, []);
 
-  const handlePageSizeChange = (e) => {
-    setPageSize(Number(e.target.value));
+  const handlePageSizeChange = (newSize) => {
+    setPageSize(Number(newSize));
+    setPageOffset(0);
   };
 
   const getSearchFields = () => {

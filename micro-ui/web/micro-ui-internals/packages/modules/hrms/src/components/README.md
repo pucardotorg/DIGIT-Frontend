@@ -76,11 +76,112 @@ A human-readable CSS file documenting the full card design intent (gradients, ho
 
 ---
 
+## Shared Components
+
+### `CustomTable.js` _(New — Reusable)_
+
+A fully custom, reusable table component with built-in skeleton loading, pagination, hover states, and flexible column renderers. Designed to replace repeated table markup across multiple screens.
+
+**Props:**
+
+| Prop              | Type                             | Default              | Description                                                                                                                                              |
+| ----------------- | -------------------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `columns`         | `Array<Column>`                  | `[]`                 | Column definitions (see shape below)                                                                                                                     |
+| `data`            | `Array<Object>`                  | `[]`                 | Row data                                                                                                                                                 |
+| `isLoading`       | `boolean`                        | `false`              | Shows skeleton rows when true                                                                                                                            |
+| `skeletonRows`    | `number`                         | `5`                  | Number of shimmer rows during loading                                                                                                                    |
+| `emptyMessage`    | `string \| ReactNode`            | `"No records found"` | Shown when data is empty                                                                                                                                 |
+| `showPagination`  | `boolean`                        | `true`               | Whether to show pagination footer at all                                                                                                                 |
+| `showIndexColumn` | `boolean`                        | `true`               | Show auto-generated index column (`#`) as first column. Numbering continues across pages.                                                                |
+| `dynamicPageSize` | `boolean \| number[]`            | `false`              | Show page-size selector. `true` → `[10,20,30,40,50]`; pass an array for custom options e.g. `[5,10,25,50]`. If `false`, page size is fixed (default 10). |
+| `pagination`      | `PaginationConfig`               | —                    | Pagination state & callbacks (see shape below)                                                                                                           |
+| `onRowClick`      | `(row, index) => void`           | —                    | Row click handler                                                                                                                                        |
+| `rowHover`        | `boolean`                        | `true`               | Enable row hover highlight                                                                                                                               |
+| `rowKey`          | `string \| (row, idx) => string` | —                    | Unique key for each row                                                                                                                                  |
+
+**Column shape:**
+
+```js
+{
+  key: string,           // unique column identifier
+  label: string,         // header text (can also be ReactNode)
+  width: string,         // optional CSS width (e.g. "48px")
+  render: (row, idx) => ReactNode,  // custom cell renderer — return ANY JSX:
+                                     // buttons, dropdowns, icons, links, etc.
+  accessor: (row) => value,         // simple value extractor (ignored if render set)
+  skeleton: {            // skeleton config for loading state
+    type: "text" | "avatar-text",
+    width: string,       // for type "text"
+    widths: string[],    // for type "avatar-text" — [nameWidth, subWidth]
+  },
+}
+```
+
+**Pagination shape:**
+
+```js
+{
+  currentPage: number,       // 0-based page index
+  totalPages: number,
+  pageSize: number,          // current rows per page (needed when dynamicPageSize is on)
+  hasPrev: boolean,
+  hasNext: boolean,
+  onPrev: () => void,
+  onNext: () => void,
+  onPageChange: (page: number) => void,
+  onPageSizeChange: (newSize: number) => void,  // required when dynamicPageSize is enabled
+  totalRecords: number,      // optional — enables "Showing X–Y of Z" display
+}
+```
+
+**Usage Examples:**
+
+Fixed page size (no selector):
+
+```jsx
+<CustomTable
+  columns={columns}
+  data={employees}
+  isLoading={loading}
+  pagination={{ currentPage, totalPages, pageSize: 10, hasPrev, hasNext, onPrev, onNext, onPageChange }}
+/>
+```
+
+Dynamic page size (with selector dropdown):
+
+```jsx
+<CustomTable
+  columns={columns}
+  data={employees}
+  isLoading={loading}
+  showPagination={true}
+  dynamicPageSize={true}              {/* or dynamicPageSize={[5, 10, 25, 50]} */}
+  pagination={{
+    currentPage, totalPages, pageSize,
+    hasPrev, hasNext, onPrev, onNext, onPageChange,
+    onPageSizeChange: handlePageSizeChange,
+    totalRecords: 85,
+  }}
+/>
+```
+
+No pagination:
+
+```jsx
+<CustomTable columns={columns} data={data} showPagination={false} />
+```
+
+> **Cell flexibility:** The `render` prop on any column accepts ANY JSX — action menus, dropdowns, icons, badges, links, nested components, etc. This means any cell can be a fully interactive widget, not just text.
+
+> **Reusability:** This component is not HRMS-specific. It can be used on any screen that needs a data table with loading/pagination.
+
+---
+
 ## Search Components (Employee Search)
 
-### `SearchEmployeeScreen.js` _(New — Redesign)_
+### `SearchEmployeeScreen.js` _(Redesigned)_
 
-A fully custom search screen that replaces DIGIT's built-in DesktopInbox/InboxFilter/SearchApplication combo for maximum design flexibility.
+A fully custom search screen that replaces DIGIT's built-in DesktopInbox/InboxFilter/SearchApplication combo. Uses modern React syntax (JSX, `const`/`let`, arrow functions, destructuring) and delegates table rendering to `CustomTable`.
 
 **Props:**
 
@@ -88,7 +189,6 @@ A fully custom search screen that replaces DIGIT's built-in DesktopInbox/InboxFi
 | ------------------ | ---------- | ------------------------------------------------- |
 | `data`             | `Object`   | Employee search results from `useHRMSSearch` hook |
 | `isLoading`        | `boolean`  | Loading state from search hook                    |
-| `onSearch`         | `Function` | Search callback (receives search params)          |
 | `onFilterChange`   | `Function` | Filter change callback (receives filter params)   |
 | `searchParams`     | `Object`   | Current search parameters                         |
 | `currentPage`      | `number`   | Current page index (0-based)                      |
@@ -100,47 +200,33 @@ A fully custom search screen that replaces DIGIT's built-in DesktopInbox/InboxFi
 
 **Features:**
 
-- **Unified search bar** - Single input searching across name, phone, and ID fields with intelligent detection
-- **Filter chips** - Status, Role, Court Establishment, ULB with dropdown overlays and active state indicators
-- **Active filter pills** - Removable tags showing applied filters with clear buttons
-- **Enhanced table** - Avatar with initials, grouped name+ID, designation, court establishment, status badges
-- **Skeleton loading** - Shimmer rows during data fetch for smooth perceived performance
-- **Modern pagination** - Page number buttons with Previous/Next navigation and disabled states
-- **+ Create Employee button** - Prominent call-to-action linking to employee creation page
-- **Responsive design** - Mobile-friendly layout with proper hover states and transitions
+- **Unified search bar** — single input searching across name, phone, and ID fields with intelligent detection
+- **Filter chips** — Status, Role, Court Establishment, ULB with dropdown overlays
+- **Active filter pills** — removable tags showing applied filters
+- **`CustomTable` integration** — column definitions with custom renderers for avatar, status badge, action menu
+- **Semantic HTML** — uses `<header>` and `<section>` elements for better document structure
+- **Modern syntax** — `const`/`let`, JSX, arrow functions, destructured props, template literals
+
+**Internal sub-components:**
+
+- `FilterChip` — dropdown chip button for a single filter dimension
+- `getInitials()` — helper to extract name initials for avatar display
 
 **Data Integration:**
-The component uses existing DIGIT hooks without modification:
 
 ```js
-// Data fetching (handled by parent Inbox.js)
-Digit.Hooks.hrms.useHRMSSearch(searchParams, tenantId, paginationParams)
-Digit.Hooks.hrms.useHRMSCount(tenantId)
-Digit.Hooks.hrms.useHrmsMDMS(tenantId, "egov-hrms", "HRMSRolesandDesignation")
-
-// Filter options from MDMS
-- Status: Active/Inactive from translation keys
-- Roles: From ACCESSCONTROL-ROLES MDMS data
-- Court Establishment: From common-masters MDMS data
-- ULB: From user's accessible cities
+// MDMS fetched inside component for filter options
+Digit.Hooks.hrms.useHrmsMDMS(tenantId, "egov-hrms", "HRMSRolesandDesignation");
+// Data fetching handled by parent Inbox.js
+Digit.Hooks.hrms.useHRMSSearch(searchParams, tenantId, paginationParams);
 ```
-
-**Technical Implementation:**
-
-- Uses inline styles (no CSS imports) due to microbundle CSS Modules constraints
-- Implements debounced search (400ms) to reduce API calls
-- Intelligent search detection (numeric → phone, alphabetic → name, other → employee ID)
-- Proper cleanup of event listeners and timers
-- Accessibility support with ARIA labels and keyboard navigation
 
 **Usage Example:**
 
-```js
-// In Inbox.js desktop view
+```jsx
 <SearchEmployeeScreen
   data={data}
   isLoading={hookLoading}
-  onSearch={handleFilterChange}
   onFilterChange={handleFilterChange}
   searchParams={searchParams}
   currentPage={Math.floor(pageOffset / pageSize)}
