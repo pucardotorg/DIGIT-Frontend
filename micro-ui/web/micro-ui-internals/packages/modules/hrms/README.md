@@ -81,3 +81,57 @@ Documentation Site (https://core.digit.org/guides/developer-guide/ui-developer-g
 DIGIT Frontend Repo (https://github.com/egovernments/Digit-Frontend/tree/master)
 
 ![Logo](https://s3.ap-south-1.amazonaws.com/works-dev-asset/mseva-white-logo.png)
+
+---
+
+## Card Redesign (Employee Home Page)
+
+> Replaces DIGIT's built-in `EmployeeModuleCard` with a fully custom React card design across the HRMS and Workbench modules.
+
+### Files changed
+
+| File | Change |
+|------|--------|
+| `src/components/ModuleCard.js` | **New.** Shared card — gradient header, SVG KPI donut rings, animated nav links, hover lift effect. Uses inline styles. |
+| `src/components/ModuleCard.css` | **New (reference only).** Readable CSS documenting design tokens. Not loaded at runtime — see caveats below. |
+| `src/components/hrmscard.js` | **Modified.** Uses `<ModuleCard theme="hrms">` instead of `<EmployeeModuleCard>`. |
+| `src/components/WorkbenchCard.js` | **New.** Local override of the Workbench card from the npm package, using the Component Registry pattern. |
+| `src/Module.js` | **Modified.** `WorkbenchCard` added to `componentsToRegister`. |
+
+### WorkbenchCard override pattern
+
+The Workbench module is a pre-built npm package with no editable source. Its home card is overridden here via the DIGIT Component Registry:
+
+```js
+// src/Module.js — WorkbenchCard overrides the npm version
+const componentsToRegister = {
+  HRMSCard,
+  WorkbenchCard,
+  // ...
+};
+```
+
+**Critical — init order in `example/src/index.js`:**
+
+```js
+initWorkbenchComponents();  // npm WorkbenchCard registered first
+initHRMSComponents();       // our WorkbenchCard overwrites it ← must be last
+```
+
+### How the DIGIT home page discovers cards
+
+```js
+// DigitUI core — for each enabled module:
+Digit.ComponentRegistryService.getComponent(moduleCode + "Card")
+// "HRMS" → getComponent("HRMSCard")
+// "Workbench" → getComponent("WorkbenchCard")
+```
+
+### Build constraints
+
+| Constraint | Reason | Workaround |
+|-----------|--------|-----------|
+| No `??` nullish coalescing | Babel/Webpack config does not support it | Use `!= null ? x : fallback` |
+| No `.css` imports in components | microbundle hashes all class names (CSS Modules), breaking plain `className` | Use inline JS style objects |
+
+See [`src/components/README.md`](src/components/README.md) for the full component API reference.

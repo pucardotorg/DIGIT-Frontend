@@ -35,12 +35,19 @@ export const HRMSModule = ({ stateCode, userType, tenants }) => {
     return null;
   }
   if (userType === "employee") {
-    return <h1>kkkkkkkkkkkkk</h1>;
+    return <EmployeeApp path={path} url={url} />;
   } else return null;
 };
 
 const componentsToRegister = {
   HRMSCard,
+  /**
+   * WorkbenchCard — local override of the card from @egovernments/digit-ui-module-workbench.
+   * The npm package has no editable source; we override it here via the Component Registry.
+   * IMPORTANT: initHRMSComponents() must be called AFTER initWorkbenchComponents() in the
+   * app entry point (example/src/index.js) so this registration wins.
+   * See: src/components/WorkbenchCard.js and src/components/README.md
+   */
   WorkbenchCard,
   HRMSDetails: Details,
   SelectEmployeeEmailId,
