@@ -19,6 +19,7 @@ const EmployeeApp = ({ path, url, userType }) => {
   const Inbox = Digit?.ComponentRegistryService?.getComponent("HRInbox");
   const CreateEmployee = Digit?.ComponentRegistryService?.getComponent("HRCreateEmployee");
   const EditEmpolyee = Digit?.ComponentRegistryService?.getComponent("HREditEmpolyee");
+  const EmployeeForm = Digit?.ComponentRegistryService?.getComponent("HREmployeeForm");
 
   const employeeCreateSession = Digit.Hooks.useSessionStorage("NEW_EMPLOYEE_CREATE", {});
   const [sessionFormData, setSessionFormData, clearSessionFormData] = employeeCreateSession;
@@ -46,10 +47,10 @@ const EmployeeApp = ({ path, url, userType }) => {
               <Inbox parentRoute={path} businessService="hrms" filterComponent="HRMS_INBOX_FILTER" initialStates={inboxInitialState} isInbox={true} />
             )}
           />
-          <PrivateRoute path={`${path}/create`} component={() => <CreateEmployee />} />
+          <PrivateRoute path={`${path}/create`} component={() => <EmployeeForm />} />
           <PrivateRoute path={`${path}/response`} component={(props) => <HRMSResponse {...props} parentRoute={path} />} />
           <PrivateRoute path={`${path}/details/:tenantId/:id`} component={() => <HRMSDetails />} />
-          <PrivateRoute path={`${path}/edit/:tenantId/:id`} component={() => <EditEmpolyee />} />
+          <PrivateRoute path={`${path}/edit/:tenantId/:id`} component={() => <EmployeeForm />} />
         </div>
       </React.Fragment>
     </Switch>

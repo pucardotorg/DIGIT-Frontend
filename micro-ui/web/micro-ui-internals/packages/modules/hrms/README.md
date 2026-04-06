@@ -218,3 +218,50 @@ Digit.UploadServices.Filefetch([documentId], stateId)
 - `DetailField` — label-value pair with uppercase gray label
 - `SectionCard` — white card with icon header and content body
 - `getInitials()` — extracts name initials for avatar display
+
+---
+
+## Employee Form Redesign (Create / Edit)
+
+> Replaces `createEmployee.js` + `EditEmployee/EditForm.js` + DIGIT's `FormComposer` with a single unified `EmployeeForm.js` component using modern inline styles.
+
+### Files changed
+
+| File                        | Change                                                                                                                                          |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/pages/EmployeeForm.js` | **New.** Unified Create/Edit form with modern UI, custom inline-styled form controls, cascading dropdowns, validation, and toast notifications. |
+| `src/Module.js`             | **Modified.** Imported and registered `EmployeeForm` as `HREmployeeForm`.                                                                       |
+| `src/pages/index.js`        | **Modified.** Updated `/create` and `/edit/:tenantId/:id` routes to render `EmployeeForm` instead of `CreateEmployee` / `EditEmpolyee`.         |
+
+### Design Features
+
+- **Hero header card** — teal gradient accent, avatar (edit mode), title + description
+- **Section cards** — Personal Details, Employee Details, Assignment Details with icon headers
+- **Custom form controls** — `FormInput`, `FormSelect` (searchable), `FormMultiSelect` (checkboxes + tags), `FormDate`
+- **Dynamic assignments** — add/remove cards with teal index badges; cascading District ↔ Court Establishment ↔ Courtroom
+- **Inline validation** — real-time error messages for name, phone, email
+- **Phone duplicate check** — debounced API call with toast on duplicate
+- **Employee ID duplicate check** — on submit via API
+- **Submit bar** — gradient primary button + outlined cancel
+- **Toast notifications** — fixed-position auto-dismiss error/success toasts
+- **Mode detection** — URL-based: `/hrms/create` → create mode, `/hrms/edit/:tenantId/:id` → edit mode
+
+### Data Flow
+
+Uses the same DIGIT hooks and APIs — only the presentation layer is replaced:
+
+```
+Digit.Hooks.hrms.useHrmsMDMS(tenantId, "egov-hrms", "HRMSRolesandDesignation")
+Digit.Hooks.hrms.useHrmsMDMS(tenantId, "egov-hrms", "EmployeeType")
+Digit.Hooks.hrms.useHRMSSearch({ codes: employeeId }, tenantId)  // edit mode
+Digit.HRMSService.search(tenantId, null, { phone })              // duplicate check
+```
+
+### Submit Flow
+
+Navigates to `/hrms/response` with the same `{ Employees, key, action }` state shape:
+
+- **Create** → `{ key: "CREATE", action: "CREATE" }`
+- **Edit** → `{ key: "UPDATE", action: "UPDATE" }`
+
+Supports `Digit.Customizations.HRMS.customiseCreateFormData` and `customiseUpdateFormData` hooks.

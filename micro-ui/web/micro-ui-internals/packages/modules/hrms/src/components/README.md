@@ -287,3 +287,64 @@ Digit.UploadServices.Filefetch([documentId], stateId);
 | Activate   | Opens `ActionModal` with `ACTIVATE_EMPLOYEE_HEAD` action   |
 
 **Styling:** All styles are inline (no CSS imports) using the same teal/gray colour token system as `SearchEmployeeScreen`. Key tokens: `TEAL (#0d6a82)`, `GREEN (#16a34a)`, `RED (#dc2626)`, `ORANGE (#ea580c)`.
+
+---
+
+## Employee Form (Create / Edit)
+
+### `EmployeeForm.js` _(New)_
+
+Located at `src/pages/EmployeeForm.js`. A unified form component that handles **both** Create Employee and Edit Employee flows in a single file. Replaces the old `createEmployee.js` + `EditEmployee/EditForm.js` + `FormComposer` combo with a fully custom modern UI using inline styles.
+
+**Route detection:** Determines mode from URL — `/hrms/create` renders create mode, `/hrms/edit/:tenantId/:id` renders edit mode (pre-populates form with existing employee data).
+
+**Registered as:** `HREmployeeForm` in `Module.js`
+
+**Design Elements:**
+
+- **Hero header card** — teal gradient accent bar, avatar with initials (edit mode), title + description.
+- **Section cards** — rounded white cards with icon headers for Personal Details, Employee Details, Assignment Details.
+- **Custom form inputs** — all inline-styled: text inputs, dropdowns with search, multi-select with checkboxes and removeable tags, date inputs.
+- **Dynamic assignments** — add/remove assignment cards with teal index badges.
+- **Cascading dropdowns** — District ↔ Court Establishment ↔ Courtroom auto-link.
+- **Inline validation** — real-time error messages for name, phone, email patterns.
+- **Phone duplicate check** — debounced API call to detect existing phone numbers.
+- **Employee ID duplicate check** — on submit, checks for existing employee codes.
+- **Submit / Cancel bar** — gradient primary submit button with disabled state, outlined cancel.
+- **Toast notifications** — fixed-position error/success toasts with auto-dismiss.
+
+**Sub-components (defined within file):**
+
+| Component         | Description                                                      |
+| ----------------- | ---------------------------------------------------------------- |
+| `SectionCard`     | White card wrapper with icon header bar                          |
+| `FormInput`       | Text input with label, prefix (e.g. +91), validation error, hint |
+| `FormSelect`      | Searchable dropdown with outside-click close                     |
+| `FormMultiSelect` | Multi-select with checkboxes, search, removeable tags            |
+| `FormDate`        | Date input with min/max constraints                              |
+| `ToastNotif`      | Fixed-position toast notification with auto-dismiss              |
+
+**Data Integration:**
+
+```js
+// MDMS hooks (fetched at top level)
+Digit.Hooks.hrms.useHrmsMDMS(tenantId, "egov-hrms", "HRMSRolesandDesignation");
+Digit.Hooks.hrms.useHrmsMDMS(tenantId, "egov-hrms", "EmployeeType");
+
+// Employee data (edit mode only)
+Digit.Hooks.hrms.useHRMSSearch({ codes: employeeId }, tenantId);
+
+// Phone duplicate check
+Digit.HRMSService.search(tenantId, null, { phone });
+
+// Employee ID duplicate check (on submit)
+Digit.HRMSService.search(tenantId, null, { codes: empCode });
+```
+
+**Submit flow:** Navigates to `/hrms/response` with the same `{ Employees, key, action }` state shape expected by `Response.js`. Supports `Digit.Customizations.HRMS.customiseCreateFormData` and `customiseUpdateFormData` hooks.
+
+**Cascading dropdown logic:**
+
+- **District selected** → filters Court Establishments; clears mismatched establishment/courtroom
+- **Court Establishment selected** → auto-sets District; filters Courtrooms; clears mismatched courtroom
+- **Courtroom selected** → auto-sets Court Establishment and District

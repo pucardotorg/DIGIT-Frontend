@@ -22,6 +22,7 @@ import EditEmployee from "./pages/EditEmployee/index";
 import Details from "./pages/EmployeeDetails";
 import Inbox from "./pages/Inbox";
 import Response from "./pages/Response";
+import EmployeeForm from "./pages/EmployeeForm";
 import { CustomMultiSelect } from "./components/pageComponents/CustomMultiSelect";
 
 export const HRMSModule = ({ stateCode, userType, tenants }) => {
@@ -67,6 +68,7 @@ const componentsToRegister = {
   HRMSResponse: Response,
   HREditEmpolyee: EditEmployee,
   HRCreateEmployee: CreateEmployee,
+  HREmployeeForm: EmployeeForm,
   HRInbox: Inbox,
   HRMS_INBOX_FILTER: (props) => <InboxFilter {...props} />,
   CustomMultiSelect,
