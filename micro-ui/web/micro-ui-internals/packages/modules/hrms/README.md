@@ -32,7 +32,6 @@ then navigate to App.js
  frontend/micro-ui/web/src/App.js
 ```
 
-
 ```jsx
 /** add this import **/
 
@@ -66,7 +65,7 @@ const initDigitUI = () => {
 
 ### Contributors
 
-[jagankumar-egov] [naveen-egov] [nipunarora-eGov] [Tulika-eGov] [Ramkrishna-egov] [vamshikrishnakole-wtt-egov] 
+[jagankumar-egov] [naveen-egov] [nipunarora-eGov] [Tulika-eGov] [Ramkrishna-egov] [vamshikrishnakole-wtt-egov]
 
 ## Documentation
 
@@ -76,8 +75,8 @@ Documentation Site (https://core.digit.org/guides/developer-guide/ui-developer-g
 
 - [jagankumar-egov](https://www.github.com/jagankumar-egov)
 
+### Published from DIGIT Frontend
 
-### Published from DIGIT Frontend 
 DIGIT Frontend Repo (https://github.com/egovernments/Digit-Frontend/tree/master)
 
 ![Logo](https://s3.ap-south-1.amazonaws.com/works-dev-asset/mseva-white-logo.png)
@@ -90,13 +89,13 @@ DIGIT Frontend Repo (https://github.com/egovernments/Digit-Frontend/tree/master)
 
 ### Files changed
 
-| File | Change |
-|------|--------|
-| `src/components/ModuleCard.js` | **New.** Shared card — gradient header, SVG KPI donut rings, animated nav links, hover lift effect. Uses inline styles. |
-| `src/components/ModuleCard.css` | **New (reference only).** Readable CSS documenting design tokens. Not loaded at runtime — see caveats below. |
-| `src/components/hrmscard.js` | **Modified.** Uses `<ModuleCard theme="hrms">` instead of `<EmployeeModuleCard>`. |
-| `src/components/WorkbenchCard.js` | **New.** Local override of the Workbench card from the npm package, using the Component Registry pattern. |
-| `src/Module.js` | **Modified.** `WorkbenchCard` added to `componentsToRegister`. |
+| File                              | Change                                                                                                                  |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `src/components/ModuleCard.js`    | **New.** Shared card — gradient header, SVG KPI donut rings, animated nav links, hover lift effect. Uses inline styles. |
+| `src/components/ModuleCard.css`   | **New (reference only).** Readable CSS documenting design tokens. Not loaded at runtime — see caveats below.            |
+| `src/components/hrmscard.js`      | **Modified.** Uses `<ModuleCard theme="hrms">` instead of `<EmployeeModuleCard>`.                                       |
+| `src/components/WorkbenchCard.js` | **New.** Local override of the Workbench card from the npm package, using the Component Registry pattern.               |
+| `src/Module.js`                   | **Modified.** `WorkbenchCard` added to `componentsToRegister`.                                                          |
 
 ### WorkbenchCard override pattern
 
@@ -114,24 +113,64 @@ const componentsToRegister = {
 **Critical — init order in `example/src/index.js`:**
 
 ```js
-initWorkbenchComponents();  // npm WorkbenchCard registered first
-initHRMSComponents();       // our WorkbenchCard overwrites it ← must be last
+initWorkbenchComponents(); // npm WorkbenchCard registered first
+initHRMSComponents(); // our WorkbenchCard overwrites it ← must be last
 ```
 
 ### How the DIGIT home page discovers cards
 
 ```js
 // DigitUI core — for each enabled module:
-Digit.ComponentRegistryService.getComponent(moduleCode + "Card")
+Digit.ComponentRegistryService.getComponent(moduleCode + "Card");
 // "HRMS" → getComponent("HRMSCard")
 // "Workbench" → getComponent("WorkbenchCard")
 ```
 
 ### Build constraints
 
-| Constraint | Reason | Workaround |
-|-----------|--------|-----------|
-| No `??` nullish coalescing | Babel/Webpack config does not support it | Use `!= null ? x : fallback` |
-| No `.css` imports in components | microbundle hashes all class names (CSS Modules), breaking plain `className` | Use inline JS style objects |
+| Constraint                      | Reason                                                                       | Workaround                   |
+| ------------------------------- | ---------------------------------------------------------------------------- | ---------------------------- |
+| No `??` nullish coalescing      | Babel/Webpack config does not support it                                     | Use `!= null ? x : fallback` |
+| No `.css` imports in components | microbundle hashes all class names (CSS Modules), breaking plain `className` | Use inline JS style objects  |
 
 See [`src/components/README.md`](src/components/README.md) for the full component API reference.
+
+---
+
+## Search Employee Screen Redesign
+
+> Replaces DIGIT's built-in DesktopInbox/InboxFilter/SearchApplication combo with a fully custom React implementation for maximum design flexibility.
+
+### Files changed
+
+| File                                     | Change                                                                                                                                 |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/components/SearchEmployeeScreen.js` | **New.** Custom search screen with unified search bar, filter chips, active filter pills, avatar-enhanced table, and skeleton loading. |
+| `src/pages/Inbox.js`                     | **Modified.** Uses `SearchEmployeeScreen` instead of `DesktopInbox` for desktop view.                                                  |
+
+### Design Features
+
+- **Unified search bar** - Single text input searching across name, phone, and ID fields
+- **Filter chip buttons** - Status, Role, Court Establishment, ULB with dropdown overlays
+- **Active filter pills** - Removable tags below search bar showing applied filters
+- **Enhanced table rows** - Avatar with initials, grouped name+ID, status badges, action menus
+- **Skeleton loading** - Shimmer rows for smoother perceived performance
+- **Modern pagination** - Page number buttons with Previous/Next navigation
+- **+ Create Employee button** - Prominent call-to-action in top-right corner
+
+### Data Flow
+
+The existing DIGIT hooks and API calls remain unchanged - only the presentation layer is replaced:
+
+```
+Digit.Hooks.hrms.useHRMSSearch(searchParams, tenantId, paginationParams)
+Digit.Hooks.hrms.useHRMSCount(tenantId)
+Digit.Hooks.hrms.useHrmsMDMS(tenantId, "egov-hrms", "HRMSRolesandDesignation")
+```
+
+### Technical Notes
+
+- Uses inline styles (no CSS imports) due to microbundle CSS Modules constraints
+- Maintains compatibility with existing filter and pagination logic
+- Fully responsive design with hover states and smooth transitions
+- Accessibility support with proper ARIA labels and keyboard navigation
