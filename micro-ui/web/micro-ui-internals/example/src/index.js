@@ -18,7 +18,7 @@ import { UICustomizations } from "./UICustomizations";
 
 var Digit = window.Digit || {};
 
-const enabledModules = [ "DSS", "HRMS",
+const enabledModules = [ "DSS", "HRMS", //here
 "Workbench"
 ,"PGR"
 //  "Engagement", "NDSS","QuickPayLinks", "Payment",
@@ -66,11 +66,13 @@ const initDigitUI = () => {
   });
 
   initDSSComponents();
-  initHRMSComponents();
   initEngagementComponents();
   // initUtilitiesComponents();
   initWorkbenchComponents();
   initPGRComponents();
+  // IMPORTANT: initHRMSComponents must run AFTER initWorkbenchComponents
+  // so our local WorkbenchCard overrides the npm-provided one in the registry.
+  initHRMSComponents();
 
 
   const moduleReducers = (initData) =>  ({

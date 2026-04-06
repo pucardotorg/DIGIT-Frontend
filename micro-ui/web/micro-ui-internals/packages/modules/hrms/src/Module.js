@@ -1,6 +1,7 @@
 import React from "react";
 import { useRouteMatch } from "react-router-dom";
 import HRMSCard from "./components/hrmscard";
+import WorkbenchCard from "./components/WorkbenchCard";
 import InboxFilter from "./components/InboxFilter";
 import ActionModal from "./components/Modal";
 import Assignments from "./components/pageComponents/assignment";
@@ -34,12 +35,13 @@ export const HRMSModule = ({ stateCode, userType, tenants }) => {
     return null;
   }
   if (userType === "employee") {
-    return <EmployeeApp path={path} url={url} />;
+    return <h1>kkkkkkkkkkkkk</h1>;
   } else return null;
 };
 
 const componentsToRegister = {
   HRMSCard,
+  WorkbenchCard,
   HRMSDetails: Details,
   SelectEmployeeEmailId,
   SelectEmployeeName,
