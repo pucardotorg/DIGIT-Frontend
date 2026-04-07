@@ -323,7 +323,6 @@ const SearchEmployeeScreen = ({
   const [filterUlb, setFilterUlb] = useState(null);
   const [filterCourt, setFilterCourt] = useState(null);
   const [filterRole, setFilterRole] = useState(null);
-  const [autoSearch, setAutoSearch] = useState(true);
 
   const employees = (data && data.Employees) || [];
   const pageSize = pageSizeLimit;
@@ -387,12 +386,7 @@ const SearchEmployeeScreen = ({
     onFilterChange(params);
   }, [searchText, filterStatus, filterUlb, filterCourt, filterRole, onFilterChange]);
 
-  /* debounced search on any filter/text change (only when autoSearch is enabled) */
-  useEffect(() => {
-    if (!autoSearch) return;
-    const timer = setTimeout(() => applySearch(), 400);
-    return () => clearTimeout(timer);
-  }, [searchText, filterStatus, filterUlb, filterCourt, filterRole, autoSearch, applySearch]);
+  /* debounced search removed - using manual search only to prevent pagination reset issues */
 
   /* ──── manual search/clear handlers ──── */
   const handleManualSearch = () => {
@@ -405,7 +399,11 @@ const SearchEmployeeScreen = ({
     setFilterUlb(null);
     setFilterCourt(null);
     setFilterRole(null);
-    // Clear search will trigger applySearch via useEffect
+    // Manually trigger search after clearing filters
+    setTimeout(() => {
+      const params = { delete: ["names", "phone", "codes", "isActive", "CourtEstablishment", "roles"] };
+      onFilterChange(params);
+    }, 0);
   };
 
   const hasActiveFilters = searchText || filterStatus || filterUlb || filterCourt || filterRole;
@@ -559,6 +557,19 @@ const SearchEmployeeScreen = ({
             optionKey="i18text"
           />
           <FilterChip label={t("HR_ULB_LABEL")} options={cityOptions} selected={filterUlb} onSelect={setFilterUlb} optionKey="i18text" />
+
+          {/* Search button */}
+          <button
+            type="button"
+            style={{
+              ...styles.searchActionBtn,
+              ...styles.searchBtn,
+            }}
+            onClick={handleManualSearch}
+            title="Apply filters"
+          >
+            &#128269; {t("ES_COMMON_SEARCH") || "Search"}
+          </button>
 
           {/* Clear Search button */}
           <button
