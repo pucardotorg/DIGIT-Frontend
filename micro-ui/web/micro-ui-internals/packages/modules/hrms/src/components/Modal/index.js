@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import EmployeeAction from "../EmployeeAction";
+import React from "react";
+import EmployeeActionModal from "../EmployeeActionModal";
 
 const ActionModal = (props) => {
-  return <EmployeeAction {...props} />;
+  return <EmployeeActionModal {...props} />;
 };
 
 export default ActionModal;
