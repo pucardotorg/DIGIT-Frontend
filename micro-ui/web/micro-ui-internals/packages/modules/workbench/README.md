@@ -25,7 +25,8 @@ workbench/
         ├── index.js               # Route definitions
         ├── MDMSSearchV2.js        # MDMS search screen (module/master dropdowns)
         ├── MDMSViewV2.js          # MDMS results screen (dynamic table + filters)
-        └── MDMSDetailV2.js        # Record detail / edit screen
+        ├── MDMSDetailV2.js        # Record detail / edit screen
+        └── MDMSCreateV2.js        # Create new schema + data screen
 ```
 
 ## Installation
@@ -45,6 +46,7 @@ yarn start
 | `/workbench/manage-master-data`                    | `MDMSSearchV2` | Module/Master dropdown search      |
 | `/workbench/mdms-view?module=X&master=Y`           | `MDMSViewV2`   | Results table with dynamic columns |
 | `/workbench/mdms-view-row?module=X&master=Y&row=N` | `MDMSDetailV2` | Record detail / edit screen        |
+| `/workbench/mdms-create`                           | `MDMSCreateV2` | Create new schema + data           |
 
 ## Component Registry
 
@@ -54,6 +56,7 @@ yarn start
 | `WBMDMSSearchV2`  | MDMS Search screen                        |
 | `WBMDMSViewV2`    | MDMS Results/View screen                  |
 | `WBMDMSDetailV2`  | Record detail / edit screen               |
+| `WBMDMSCreateV2`  | Create new schema + data screen           |
 
 ## Hooks
 
@@ -69,6 +72,7 @@ yarn start
 
 - **Hero card** with teal gradient accent, icon, title, and description
 - **Two cascading dropdowns**: Module Name → Master Name (searchable)
+- **Create New button** in hero card → navigates to `/workbench/mdms-create`
 - **Search / Clear buttons**
 - **Recent searches** section persisted in `sessionStorage`
 
@@ -211,6 +215,74 @@ When editing is enabled:
 - Navigated to from `MDMSViewV2` on row click
 - Receives row data via `location.state.rowData`
 - Row data includes `_mdmsId`, `_mdmsUniqueIdentifier`, `_mdmsAuditDetails`, `isActive`
+
+---
+
+## MDMS Create Screen (`MDMSCreateV2.js`)
+
+### Design
+
+- **3-step wizard** with visual stepper indicator:
+  1. **Define Schema** — module name, master name, description, JSON schema definition
+  2. **Add Data** — unique identifier, initial data record as JSON
+  3. **Review & Create** — summary of all inputs before submission
+- **Success screen** with links to view records, create another, or go back
+
+### API Integration
+
+Uses two backend APIs (discovered from `egov-mdms-service` backend):
+
+**Step 1 — Create Schema:**
+
+```
+POST /egov-mdms-service/schema/v1/_create
+Body: {
+  "SchemaDefinition": {
+    "tenantId": "kl",
+    "code": "moduleName.masterName",
+    "description": "optional",
+    "definition": { /* JSON Schema */ },
+    "isActive": true
+  }
+}
+```
+
+**Step 2 — Create Data Record:**
+
+```
+POST /egov-mdms-service/v2/_create
+Body: {
+  "Mdms": {
+    "tenantId": "kl",
+    "schemaCode": "moduleName.masterName",
+    "uniqueIdentifier": "1",
+    "data": { /* record data */ },
+    "isActive": true
+  }
+}
+```
+
+### Validation
+
+| Field             | Rules                               |
+| ----------------- | ----------------------------------- |
+| Module Name       | Required, no spaces                 |
+| Master Name       | Required, no spaces                 |
+| JSON Schema       | Required, must be valid JSON object |
+| Unique Identifier | Required                            |
+| Data JSON         | Required, must be valid JSON object |
+
+### Sub-components
+
+| Component | Description                                |
+| --------- | ------------------------------------------ |
+| `Stepper` | Visual 3-step progress indicator           |
+| `Toast`   | Auto-dismissing success/error notification |
+
+### Navigation
+
+- Accessed from "Create New" button on MDMSSearchV2 hero card
+- On success, links to view the created records or create another entry
 
 ---
 

@@ -631,6 +631,15 @@ const MDMSViewV2 = () => {
             {!loading && <span style={S.countBadge}>{filteredData.length} records</span>}
           </p>
         </div>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+           <button 
+             type="button" 
+             style={{ padding: "9px 20px", borderRadius: "10px", border: "none", cursor: "pointer", fontSize: "13px", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "6px", background: `linear-gradient(135deg, ${TEAL} 0%, #1aabb8 100%)`, color: WHITE }} 
+             onClick={() => history.push(`/${window?.contextPath}/employee/workbench/mdms-add?module=${encodeURIComponent(moduleName)}&master=${encodeURIComponent(masterName)}`)}
+           >
+             &#43; {t("WB_ADD_MDMS") || "Add MDMS"}
+           </button>
+        </div>
       </div>
 
       {/* ── schema info ── */}

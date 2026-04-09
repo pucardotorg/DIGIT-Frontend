@@ -452,11 +452,14 @@ const MDMSSearchV2 = () => {
               <div style={S.heroIcon}>&#128218;</div>
               <h1 style={S.heroTitle}>{t("WB_MDMS_SEARCH_TITLE") || "Master Data Management"}</h1>
               <p style={S.heroSub}>
-                {t("WB_MDMS_SEARCH_DESC") ||
-                  "Search across all modules and master definitions. Enter a keyword below to find specific configurations."}
+                {t("WB_MDMS_SEARCH_DESC") || "Search and browse MDMS configuration data. Select a module and master name to view records."}
               </p>
             </div>
-            <button type="button" style={S.btnPrimary} onClick={() => history.push(`/${window?.contextPath}/employee/workbench/mdms-create`)}>
+            <button
+              type="button"
+              style={{ ...S.btn, ...S.btnPrimary, whiteSpace: "nowrap", marginTop: "4px" }}
+              onClick={() => history.push(`/${window?.contextPath}/employee/workbench/mdms-create`)}
+            >
               &#43; {t("WB_CREATE_NEW") || "Create New"}
             </button>
           </div>

@@ -603,6 +603,9 @@ const MDMSDetailV2 = () => {
       if (mdmsId) {
         body.Mdms.id = mdmsId;
       }
+      if (auditDetails) {
+        body.Mdms.auditDetails = auditDetails;
+      }
 
       await Digit.CustomService.getResponse({
         url: "/egov-mdms-service/v2/_update",

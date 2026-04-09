@@ -4,6 +4,8 @@ import WorkbenchApp from "./pages";
 import MDMSSearchV2 from "./pages/MDMSSearchV2";
 import MDMSViewV2 from "./pages/MDMSViewV2";
 import MDMSDetailV2 from "./pages/MDMSDetailV2";
+import MDMSCreateV2 from "./pages/MDMSCreateV2";
+import MDMSAddV2 from "./pages/MDMSAddV2";
 import workbenchHooks from "./hooks";
 
 /* ═══════════════════════════════════════════════
@@ -26,6 +28,8 @@ const componentsToRegister = {
   WBMDMSSearchV2: MDMSSearchV2,
   WBMDMSViewV2: MDMSViewV2,
   WBMDMSDetailV2: MDMSDetailV2,
+  WBMDMSCreateV2: MDMSCreateV2,
+  WBMDMSAddV2: MDMSAddV2,
 };
 
 export const initWorkbenchComponents = () => {
