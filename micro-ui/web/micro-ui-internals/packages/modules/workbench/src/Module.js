@@ -3,6 +3,7 @@ import { useRouteMatch } from "react-router-dom";
 import WorkbenchApp from "./pages";
 import MDMSSearchV2 from "./pages/MDMSSearchV2";
 import MDMSViewV2 from "./pages/MDMSViewV2";
+import MDMSDetailV2 from "./pages/MDMSDetailV2";
 import workbenchHooks from "./hooks";
 
 /* ═══════════════════════════════════════════════
@@ -24,6 +25,7 @@ const componentsToRegister = {
   WorkbenchModule,
   WBMDMSSearchV2: MDMSSearchV2,
   WBMDMSViewV2: MDMSViewV2,
+  WBMDMSDetailV2: MDMSDetailV2,
 };
 
 export const initWorkbenchComponents = () => {

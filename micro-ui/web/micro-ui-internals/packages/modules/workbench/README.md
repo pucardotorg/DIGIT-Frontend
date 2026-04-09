@@ -12,14 +12,20 @@ The npm package (`@egovernments/digit-ui-module-workbench`) ships pre-built with
 workbench/
 ├── package.json
 ├── README.md
+├── API_ENDPOINTS.md
+├── IMPLEMENTATION.md
 └── src/
     ├── Module.js                  # Module entry + component registry
+    ├── hooks/
+    │   ├── index.js               # Hook exports
+    │   └── useWorkbenchMDMS.js    # MDMS schema fetch hook
     ├── components/
     │   └── CustomTable.js         # Reusable table (copied from HRMS, independent)
     └── pages/
         ├── index.js               # Route definitions
         ├── MDMSSearchV2.js        # MDMS search screen (module/master dropdowns)
-        └── MDMSViewV2.js          # MDMS results screen (dynamic table + filters)
+        ├── MDMSViewV2.js          # MDMS results screen (dynamic table + filters)
+        └── MDMSDetailV2.js        # Record detail / edit screen
 ```
 
 ## Installation
@@ -34,18 +40,26 @@ yarn start
 
 ## Routes
 
-| Route | Component | Description |
-|-------|-----------|-------------|
-| `/workbench/manage-master-data` | `MDMSSearchV2` | Module/Master dropdown search |
-| `/workbench/mdms-view?module=X&master=Y` | `MDMSViewV2` | Results table with dynamic columns |
+| Route                                              | Component      | Description                        |
+| -------------------------------------------------- | -------------- | ---------------------------------- |
+| `/workbench/manage-master-data`                    | `MDMSSearchV2` | Module/Master dropdown search      |
+| `/workbench/mdms-view?module=X&master=Y`           | `MDMSViewV2`   | Results table with dynamic columns |
+| `/workbench/mdms-view-row?module=X&master=Y&row=N` | `MDMSDetailV2` | Record detail / edit screen        |
 
 ## Component Registry
 
-| Key | Component |
-|-----|-----------|
+| Key               | Component                                 |
+| ----------------- | ----------------------------------------- |
 | `WorkbenchModule` | Top-level module (renders `WorkbenchApp`) |
-| `WBMDMSSearchV2` | MDMS Search screen |
-| `WBMDMSViewV2` | MDMS Results/View screen |
+| `WBMDMSSearchV2`  | MDMS Search screen                        |
+| `WBMDMSViewV2`    | MDMS Results/View screen                  |
+| `WBMDMSDetailV2`  | Record detail / edit screen               |
+
+## Hooks
+
+| Hook                                               | Description                                                              |
+| -------------------------------------------------- | ------------------------------------------------------------------------ |
+| `Digit.Hooks.workbench.useWorkbenchMDMS(tenantId)` | Fetches all MDMS v2 schema definitions, returns `{ moduleMap, schemas }` |
 
 ---
 
@@ -60,18 +74,17 @@ yarn start
 
 ### Data Flow
 
-1. On mount, fetches all available MDMS schemas:
-   - **Primary**: `/mdms-v2/schema/v1/_search` (v2 schema endpoint)
-   - **Fallback**: Standard MDMS v1 search with known module list
+1. On mount, calls `Digit.Hooks.workbench.useWorkbenchMDMS(tenantId)` which fetches:
+   - `/egov-mdms-service/schema/v1/_search` (v2 schema endpoint)
 2. Builds a `{ moduleName: [masterName, ...] }` map for dropdown options
 3. On search, navigates to `/workbench/mdms-view?module=X&master=Y`
 
 ### Sub-components
 
-| Component | Description |
-|-----------|-------------|
+| Component        | Description                                                             |
+| ---------------- | ----------------------------------------------------------------------- |
 | `SearchDropdown` | Searchable dropdown with label, required indicator, outside-click close |
-| `RecentChip` | Clickable chip for recent search entries with hover effect |
+| `RecentChip`     | Clickable chip for recent search entries with hover effect              |
 
 ---
 
@@ -95,7 +108,7 @@ yarn start
 
 1. Reads `module` and `master` from URL query params
 2. Fetches data:
-   - **Primary**: `/mdms-v2/v2/_search` with `schemaCode`
+   - **Primary**: `/egov-mdms-service/v2/_search` with `schemaCode`
    - **Fallback**: Standard MDMS v1 search
 3. Derives schema (field names + types) from data rows
 4. Auto-detects filterable columns (string/boolean/number with ≤50 unique values)
@@ -104,20 +117,20 @@ yarn start
 
 ### Sub-components
 
-| Component | Description |
-|-----------|-------------|
+| Component    | Description                                                 |
+| ------------ | ----------------------------------------------------------- |
 | `FilterChip` | Dropdown filter for a specific column with search and clear |
 
 ### Cell Value Rendering
 
-| Type | Rendering |
-|------|-----------|
-| `null/undefined` | Gray italic dash |
-| `boolean` | Green "true" / Red "false" badge |
-| `array` | Teal count badge + "items" label |
-| `object` | Teal count badge + "keys" label |
-| `string` | Plain text (truncated at 60 chars) |
-| `number` | Plain text |
+| Type             | Rendering                          |
+| ---------------- | ---------------------------------- |
+| `null/undefined` | Gray italic dash                   |
+| `boolean`        | Green "true" / Red "false" badge   |
+| `array`          | Teal count badge + "items" label   |
+| `object`         | Teal count badge + "keys" label    |
+| `string`         | Plain text (truncated at 60 chars) |
+| `number`         | Plain text                         |
 
 ---
 
@@ -135,12 +148,78 @@ See the HRMS `components/README.md` for full API documentation.
 
 ---
 
+## MDMS Record Detail Screen (`MDMSDetailV2.js`)
+
+### Design
+
+- **Back link** to results table
+- **Header** with master name, module badge, unique identifier badge, active/inactive status badge
+- **Edit / Save / Cancel** action buttons in header
+- **Tabbed interface** with three tabs:
+  - **Data Fields** — structured field-by-field view and edit
+  - **JSON View** — raw JSON with syntax highlighting and copy button
+  - **Audit Details** — MDMS record metadata (id, created/modified by/time)
+
+### Data Fields Tab
+
+- **Record Status** card with isActive toggle (uses outer MDMS `isActive`, not inner data)
+- **Properties** card — simple fields (string, number, boolean) in a 2-column grid
+- **Complex fields** — each object/array rendered in its own card
+
+### Edit Mode
+
+When editing is enabled:
+
+| Field Type                 | Editor                             |
+| -------------------------- | ---------------------------------- |
+| `boolean`                  | Toggle switch (Active/Inactive)    |
+| `number`                   | Number input                       |
+| `string` (short)           | Text input                         |
+| `string` (long, >80 chars) | Textarea                           |
+| `object` / `array`         | JSON textarea with live validation |
+
+### Save Flow
+
+1. Sends `PUT` to `/egov-mdms-service/v2/_update` with:
+   ```json
+   {
+     "Mdms": {
+       "id": "<mdmsId>",
+       "tenantId": "<tenantId>",
+       "schemaCode": "<module>.<master>",
+       "uniqueIdentifier": "<uid>",
+       "data": { ...editedFields },
+       "isActive": true / false
+     }
+   }
+   ```
+2. Shows success/error toast notification
+3. On success, exits edit mode
+
+### Sub-components
+
+| Component         | Description                                            |
+| ----------------- | ------------------------------------------------------ |
+| `JsonHighlight`   | Syntax-highlighted JSON viewer                         |
+| `Toggle`          | Active/Inactive toggle switch                          |
+| `Toast`           | Auto-dismissing success/error notification             |
+| `JsonFieldEditor` | JSON textarea with live parse validation               |
+| `FieldEditor`     | Smart editor that picks the right input per field type |
+
+### Navigation
+
+- Navigated to from `MDMSViewV2` on row click
+- Receives row data via `location.state.rowData`
+- Row data includes `_mdmsId`, `_mdmsUniqueIdentifier`, `_mdmsAuditDetails`, `isActive`
+
+---
+
 ## Build & Dev Scripts
 
-| Script | Command |
-|--------|---------|
-| `yarn dev:workbench` | Watch mode for local development |
-| `yarn build:workbench` | Production build |
+| Script                 | Command                          |
+| ---------------------- | -------------------------------- |
+| `yarn dev:workbench`   | Watch mode for local development |
+| `yarn build:workbench` | Production build                 |
 
 ## Colour Tokens
 
