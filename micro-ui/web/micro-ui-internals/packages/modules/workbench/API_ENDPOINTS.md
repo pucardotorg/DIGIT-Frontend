@@ -125,13 +125,14 @@ The workbench module uses **MDMS v2** endpoints, not the old v1 MDMS endpoints.
 
 ## Testing
 
-1. **Module/Master Dropdown**: Check browser DevTools Network tab for:
+1. **Global Search Experience**: Check browser DevTools Network tab for:
 
    - URL: `/egov-mdms-service/schema/v1/_search`
    - Status: 200
    - Response: Array of `SchemaDefinitions`
+   - *Note*: This call happens once upfront, and the `allData` map is kept in memory. The search box filters the list without requiring subsequent API calls.
 
-2. **Search Results**: After clicking Search button, check for:
+2. **Search Results**: After clicking on a suggested combination from the search results, check for:
 
    - URL: `/egov-mdms-service/v2/_search`
    - Status: 200

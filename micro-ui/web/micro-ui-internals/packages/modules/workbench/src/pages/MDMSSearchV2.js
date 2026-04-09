@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Loader } from "@egovernments/digit-ui-react-components";
@@ -72,118 +72,80 @@ const S = {
     padding: "28px 32px",
     marginBottom: "24px",
   },
-  formGrid: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "20px",
-    marginBottom: "24px",
+
+  /* search input */
+  searchInputWrap: {
+    position: "relative",
   },
-  fieldWrap: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "6px",
+  searchIcon: {
+    position: "absolute",
+    left: "18px",
+    top: "50%",
+    transform: "translateY(-50%)",
+    color: GRAY400,
+    fontSize: "18px",
   },
-  label: {
-    fontSize: "12px",
+  searchInput: {
+    width: "100%",
+    padding: "16px 20px 16px 48px",
+    fontSize: "16px",
+    borderRadius: "12px",
+    border: `2px solid ${GRAY200}`,
+    outline: "none",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.02)",
+    transition: "border-color 0.2s, box-shadow 0.2s",
+    boxSizing: "border-box",
+  },
+  searchInputFocus: {
+    borderColor: TEAL,
+    boxShadow: `0 0 0 4px ${TEAL_LIGHT}`,
+  },
+
+  /* results table */
+  tableWrap: {
+    marginTop: "24px",
+    border: `1px solid ${GRAY200}`,
+    borderRadius: "12px",
+    overflow: "hidden",
+  },
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+  },
+  th: {
+    background: GRAY50,
+    padding: "14px 16px",
+    textAlign: "left",
+    fontSize: "13px",
     fontWeight: 600,
     color: GRAY500,
     textTransform: "uppercase",
-    letterSpacing: "0.4px",
+    borderBottom: `1px solid ${GRAY200}`,
   },
-  required: { color: "#dc2626" },
-
-  /* dropdown */
-  ddWrap: { position: "relative" },
-  ddBtn: {
-    width: "100%",
-    padding: "10px 14px",
-    borderRadius: "8px",
-    border: "1px solid " + GRAY200,
+  tr: {
+    transition: "background 0.15s",
+  },
+  td: {
+    padding: "14px 16px",
     fontSize: "14px",
     color: GRAY900,
-    background: WHITE,
-    textAlign: "left",
-    cursor: "pointer",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    boxSizing: "border-box",
-    transition: "border-color 0.15s",
-  },
-  ddBtnFocus: { borderColor: TEAL },
-  ddPlaceholder: { color: GRAY400 },
-  ddPanel: {
-    position: "absolute",
-    top: "100%",
-    left: 0,
-    right: 0,
-    marginTop: "4px",
-    background: WHITE,
-    borderRadius: "10px",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-    border: "1px solid " + GRAY100,
-    zIndex: 9990,
-    maxHeight: "280px",
-    display: "flex",
-    flexDirection: "column",
-  },
-  ddSearch: {
-    width: "100%",
-    padding: "10px 14px",
-    border: "none",
-    borderBottom: "1px solid " + GRAY100,
-    fontSize: "13px",
-    outline: "none",
-    boxSizing: "border-box",
-    borderRadius: "10px 10px 0 0",
-  },
-  ddList: {
-    flex: 1,
-    overflowY: "auto",
-  },
-  ddItem: {
-    padding: "9px 14px",
-    fontSize: "13px",
-    cursor: "pointer",
-    transition: "background 0.1s",
-  },
-  ddItemHover: { background: TEAL_LIGHT },
-  ddItemActive: { background: TEAL_LIGHT, color: TEAL, fontWeight: 600 },
-  ddEmpty: {
-    padding: "16px 14px",
-    fontSize: "13px",
-    color: GRAY400,
-    textAlign: "center",
+    borderBottom: `1px solid ${GRAY100}`,
   },
 
-  /* buttons */
-  btnRow: {
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: "12px",
-  },
-  btn: {
-    padding: "10px 24px",
-    borderRadius: "8px",
-    fontSize: "14px",
-    fontWeight: 600,
-    cursor: "pointer",
-    transition: "transform 0.12s, box-shadow 0.12s",
-    border: "none",
-  },
+  /* generic buttons */
   btnPrimary: {
     background: `linear-gradient(135deg, ${TEAL} 0%, #1aabb8 100%)`,
     color: WHITE,
+    padding: "10px 24px",
+    borderRadius: "8px",
+    border: "none",
+    fontSize: "14px",
+    fontWeight: 600,
+    cursor: "pointer",
     boxShadow: "0 2px 6px rgba(13,106,130,0.18)",
-  },
-  btnDisabled: {
-    opacity: 0.5,
-    cursor: "not-allowed",
-  },
-  btnClear: {
-    background: WHITE,
-    color: GRAY700,
-    border: "1px solid " + GRAY200,
+    transition: "transform 0.12s, box-shadow 0.12s",
+    whiteSpace: "nowrap",
+    marginTop: "4px",
   },
 
   /* recent searches */
@@ -222,6 +184,60 @@ const S = {
     background: TEAL_LIGHT,
     color: TEAL,
   },
+  emptyState: {
+    padding: "32px",
+    textAlign: "center",
+    color: GRAY500,
+    fontSize: "14px",
+  },
+
+  /* drop-down override styles */
+  ddWrap: { position: "relative" },
+  ddBtn: {
+    width: "100%",
+    padding: "10px 14px",
+    borderRadius: "8px",
+    border: `1px solid ${GRAY200}`,
+    fontSize: "14px",
+    color: GRAY900,
+    background: WHITE,
+    textAlign: "left",
+    cursor: "pointer",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    boxSizing: "border-box",
+    transition: "border-color 0.15s",
+  },
+  ddBtnFocus: { borderColor: TEAL },
+  ddPanel: {
+    position: "absolute",
+    top: "100%",
+    left: 0,
+    right: 0,
+    marginTop: "4px",
+    background: WHITE,
+    borderRadius: "10px",
+    boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+    border: `1px solid ${GRAY100}`,
+    zIndex: 9990,
+    maxHeight: "280px",
+    display: "flex",
+    flexDirection: "column",
+  },
+  ddSearch: {
+    width: "100%",
+    padding: "10px 14px",
+    border: "none",
+    borderBottom: `1px solid ${GRAY100}`,
+    fontSize: "13px",
+    outline: "none",
+    boxSizing: "border-box",
+    borderRadius: "10px 10px 0 0",
+  },
+  ddItem: { padding: "9px 14px", fontSize: "13px", cursor: "pointer", transition: "background 0.1s" },
+  ddItemHover: { background: TEAL_LIGHT },
+  ddItemActive: { background: TEAL_LIGHT, color: TEAL, fontWeight: 600 },
 };
 
 /* ─────────────── SearchDropdown sub-component ─────────────── */
@@ -229,9 +245,9 @@ const SearchDropdown = ({ label, required, options = [], selected, onSelect, pla
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [hoverIdx, setHoverIdx] = useState(-1);
-  const ref = useRef(null);
+  const ref = React.useRef(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handler = (e) => {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);
     };
@@ -246,9 +262,9 @@ const SearchDropdown = ({ label, required, options = [], selected, onSelect, pla
   }, [options, search]);
 
   return (
-    <div style={S.fieldWrap}>
-      <label style={S.label}>
-        {label} {required && <span style={S.required}>*</span>}
+    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+      <label style={{ fontSize: "12px", fontWeight: 600, color: GRAY500, textTransform: "uppercase", letterSpacing: "0.4px" }}>
+        {label} {required && <span style={{ color: "#dc2626" }}>*</span>}
       </label>
       <div ref={ref} style={S.ddWrap}>
         <button
@@ -257,15 +273,15 @@ const SearchDropdown = ({ label, required, options = [], selected, onSelect, pla
           onClick={() => !disabled && setOpen(!open)}
           disabled={disabled}
         >
-          <span style={selected ? {} : S.ddPlaceholder}>{selected || placeholder || "Select..."}</span>
+          <span style={selected ? {} : { color: GRAY400 }}>{selected || placeholder || "Select..."}</span>
           <span style={{ color: GRAY400 }}>&#9662;</span>
         </button>
         {open && (
           <div style={S.ddPanel}>
             <input style={S.ddSearch} type="text" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} autoFocus />
-            <div style={S.ddList}>
+            <div style={{ flex: 1, overflowY: "auto" }}>
               {filtered.length === 0 ? (
-                <div style={S.ddEmpty}>No matches found</div>
+                <div style={{ padding: "16px 14px", fontSize: "13px", color: GRAY400, textAlign: "center" }}>No matches found</div>
               ) : (
                 filtered.map((opt, idx) => {
                   const isSelected = selected === opt;
@@ -299,6 +315,27 @@ const SearchDropdown = ({ label, required, options = [], selected, onSelect, pla
 };
 
 /* ═══════════════════════════════════════════════
+   Table Row Component with Hover effect
+   ═══════════════════════════════════════════════ */
+const ResultRow = ({ moduleName, masterName, onClick }) => {
+  const [hover, setHover] = useState(false);
+  return (
+    <tr
+      style={{ ...S.tr, ...(hover ? { background: GRAY50, cursor: "pointer" } : {}) }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onClick={onClick}
+    >
+      <td style={S.td}>{moduleName}</td>
+      <td style={S.td}>
+        <span style={{ fontWeight: 600, color: TEAL }}>{masterName}</span>
+      </td>
+      <td style={{ ...S.td, textAlign: "right", color: GRAY400 }}>&rarr;</td>
+    </tr>
+  );
+};
+
+/* ═══════════════════════════════════════════════
    MDMSSearchV2 — main component
    ═══════════════════════════════════════════════ */
 const MDMSSearchV2 = () => {
@@ -307,8 +344,12 @@ const MDMSSearchV2 = () => {
   const tenantId = Digit.ULBService.getCurrentTenantId();
   const stateId = Digit.ULBService.getStateId();
 
+  const [globalSearch, setGlobalSearch] = useState("");
+  const [inputFocus, setInputFocus] = useState(false);
+
   const [selectedModule, setSelectedModule] = useState(null);
   const [selectedMaster, setSelectedMaster] = useState(null);
+
   const [recentSearches, setRecentSearches] = useState(() => {
     try {
       return JSON.parse(sessionStorage.getItem("WB_MDMS_RECENT") || "[]");
@@ -317,28 +358,65 @@ const MDMSSearchV2 = () => {
     }
   });
 
-  /* ── fetch MDMS data using custom hook (same pattern as HRMS) ── */
+  /* ── fetch MDMS data using custom hook ── */
   const { isLoading: loading, data: mdmsData } = Digit.Hooks.workbench.useWorkbenchMDMS(stateId || tenantId);
   const allData = mdmsData?.moduleMap || null;
+  console.log("allData", allData, mdmsData);
 
-  /* ── derived values ── */
+  /* ── derived selections ── */
   const moduleNames = useMemo(() => (allData ? Object.keys(allData).sort() : []), [allData]);
   const masterNames = useMemo(() => {
     if (!selectedModule || !allData || !allData[selectedModule]) return [];
     return allData[selectedModule];
   }, [selectedModule, allData]);
 
-  /* ── handlers ── */
   const handleModuleChange = (mod) => {
     setSelectedModule(mod);
     setSelectedMaster(null);
   };
 
-  const handleSearch = () => {
-    if (!selectedModule || !selectedMaster) return;
+  /* ── flatten into pairs: [ { module: 'x', master: 'y' } ] ── */
+  const allPairs = useMemo(() => {
+    if (!allData) return [];
+    let pairs = [];
+    Object.keys(allData).forEach((mod) => {
+      allData[mod].forEach((mas) => {
+        pairs.push({ module: mod, master: mas });
+      });
+    });
+    return pairs;
+  }, [allData]);
 
+  /* ── filter based on global search & dropdowns ── */
+  const filteredPairs = useMemo(() => {
+    let result = allPairs;
+
+    if (selectedModule) {
+      result = result.filter((p) => p.module === selectedModule);
+    }
+    if (selectedMaster) {
+      result = result.filter((p) => p.master === selectedMaster);
+    }
+
+    if (globalSearch.trim()) {
+      const q = globalSearch.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.module.toLowerCase().includes(q) ||
+          q.includes(p.module.toLowerCase()) ||
+          p.master.toLowerCase().includes(q) ||
+          q.includes(p.master.toLowerCase())
+      );
+    }
+    return result.slice(0, 50); // Show max 50 to prevent huge dom
+  }, [globalSearch, selectedModule, selectedMaster, allPairs]);
+
+  const isFiltering = globalSearch.trim() !== "" || selectedModule !== null || selectedMaster !== null;
+
+  /* ── handlers ── */
+  const handleSelect = (moduleName, masterName) => {
     /* save to recent searches */
-    const entry = { module: selectedModule, master: selectedMaster };
+    const entry = { module: moduleName, master: masterName };
     const newRecent = [entry, ...recentSearches.filter((r) => !(r.module === entry.module && r.master === entry.master))].slice(0, 8);
     setRecentSearches(newRecent);
     try {
@@ -347,22 +425,12 @@ const MDMSSearchV2 = () => {
 
     /* navigate to results */
     history.push(
-      `/${window?.contextPath}/employee/workbench/mdms-view?module=${encodeURIComponent(selectedModule)}&master=${encodeURIComponent(selectedMaster)}`
+      `/${window?.contextPath}/employee/workbench/mdms-view?module=${encodeURIComponent(moduleName)}&master=${encodeURIComponent(masterName)}`
     );
-  };
-
-  const handleClear = () => {
-    setSelectedModule(null);
-    setSelectedMaster(null);
   };
 
   const handleRecentClick = (entry) => {
-    setSelectedModule(entry.module);
-    setSelectedMaster(entry.master);
-    /* navigate directly */
-    history.push(
-      `/${window?.contextPath}/employee/workbench/mdms-view?module=${encodeURIComponent(entry.module)}&master=${encodeURIComponent(entry.master)}`
-    );
+    handleSelect(entry.module, entry.master);
   };
 
   if (loading) {
@@ -373,28 +441,34 @@ const MDMSSearchV2 = () => {
     );
   }
 
-  const canSearch = selectedModule && selectedMaster;
-
   return (
     <div style={S.page}>
       {/* ── hero card ── */}
       <div style={S.heroCard}>
         <div style={S.heroAccent} />
         <div style={S.heroBody}>
-          <div style={S.heroIcon}>&#128218;</div>
-          <h1 style={S.heroTitle}>{t("WB_MDMS_SEARCH_TITLE") || "Master Data Management"}</h1>
-          <p style={S.heroSub}>
-            {t("WB_MDMS_SEARCH_DESC") || "Search and browse MDMS configuration data. Select a module and master name to view records."}
-          </p>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+            <div>
+              <div style={S.heroIcon}>&#128218;</div>
+              <h1 style={S.heroTitle}>{t("WB_MDMS_SEARCH_TITLE") || "Master Data Management"}</h1>
+              <p style={S.heroSub}>
+                {t("WB_MDMS_SEARCH_DESC") ||
+                  "Search across all modules and master definitions. Enter a keyword below to find specific configurations."}
+              </p>
+            </div>
+            <button type="button" style={S.btnPrimary} onClick={() => history.push(`/${window?.contextPath}/employee/workbench/mdms-create`)}>
+              &#43; {t("WB_CREATE_NEW") || "Create New"}
+            </button>
+          </div>
         </div>
       </div>
 
       {/* ── search form ── */}
       <div style={S.formCard}>
-        <div style={S.formGrid}>
+        {/* Dropdowns */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "20px" }}>
           <SearchDropdown
             label={t("WB_MODULE_NAME") || "Module Name"}
-            required
             options={moduleNames}
             selected={selectedModule}
             onSelect={handleModuleChange}
@@ -402,7 +476,6 @@ const MDMSSearchV2 = () => {
           />
           <SearchDropdown
             label={t("WB_MASTER_NAME") || "Master Name"}
-            required
             options={masterNames}
             selected={selectedMaster}
             onSelect={setSelectedMaster}
@@ -411,28 +484,86 @@ const MDMSSearchV2 = () => {
           />
         </div>
 
-        <div style={S.btnRow}>
-          <button
-            type="button"
-            style={{ ...S.btn, ...S.btnClear, ...(canSearch ? {} : S.btnDisabled) }}
-            onClick={handleClear}
-            disabled={!selectedModule && !selectedMaster}
-          >
-            {t("ES_COMMON_CLEAR_SEARCH") || "Clear"}
-          </button>
-          <button
-            type="button"
-            style={{ ...S.btn, ...S.btnPrimary, ...(canSearch ? {} : S.btnDisabled) }}
-            onClick={handleSearch}
-            disabled={!canSearch}
-          >
-            &#128269; {t("WB_SEARCH") || "Search"}
-          </button>
+        {/* separator */}
+        <div style={{ display: "flex", alignItems: "center", margin: "16px 0", color: GRAY400 }}>
+          <div style={{ flex: 1, height: "1px", background: GRAY200 }}></div>
+          <span style={{ padding: "0 12px", fontSize: "12px", fontWeight: 600, textTransform: "uppercase" }}>OR / AND</span>
+          <div style={{ flex: 1, height: "1px", background: GRAY200 }}></div>
         </div>
+
+        <div style={S.searchInputWrap}>
+          <span style={S.searchIcon}>&#128269;</span>
+          <input
+            type="text"
+            placeholder={t("WB_GLOBAL_SEARCH_PLACEHOLDER") || "Global Search module or master name... (e.g. 'department' or 'common')"}
+            value={globalSearch}
+            onChange={(e) => setGlobalSearch(e.target.value)}
+            onFocus={() => setInputFocus(true)}
+            onBlur={() => setInputFocus(false)}
+            style={{
+              ...S.searchInput,
+              ...(inputFocus ? S.searchInputFocus : {}),
+            }}
+          />
+        </div>
+
+        {isFiltering && (
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "12px" }}>
+            <button
+              type="button"
+              style={{
+                padding: "6px 12px",
+                fontSize: "12px",
+                color: GRAY500,
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                textDecoration: "underline",
+              }}
+              onClick={() => {
+                setGlobalSearch("");
+                setSelectedModule(null);
+                setSelectedMaster(null);
+              }}
+            >
+              {t("ES_COMMON_CLEAR_SEARCH") || "Clear Filters"}
+            </button>
+          </div>
+        )}
+
+        {/* ── search results table ── */}
+        {isFiltering && (
+          <div style={S.tableWrap}>
+            {filteredPairs.length > 0 ? (
+              <table style={S.table}>
+                <thead>
+                  <tr>
+                    <th style={S.th}>{t("WB_MODULE_NAME") || "Module"}</th>
+                    <th style={S.th} colSpan="2">
+                      {t("WB_MASTER_NAME") || "Master"}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredPairs.map((p, idx) => (
+                    <ResultRow
+                      key={`${p.module}-${p.master}-${idx}`}
+                      moduleName={p.module}
+                      masterName={p.master}
+                      onClick={() => handleSelect(p.module, p.master)}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div style={S.emptyState}>No modules or masters matching your filters.</div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* ── recent searches ── */}
-      {recentSearches.length > 0 && (
+      {recentSearches.length > 0 && !isFiltering && (
         <div style={S.recentSection}>
           <div style={S.recentTitle}>{t("WB_RECENT_SEARCHES") || "Recent Searches"}</div>
           <div style={S.recentGrid}>
@@ -456,9 +587,9 @@ const RecentChip = ({ entry, onClick }) => {
       onMouseLeave={() => setHover(false)}
       onClick={onClick}
     >
-      <span>&#128218;</span>
+      <span style={{ color: GRAY400 }}>&#128218;</span>
       <span>
-        {entry.module} &rarr; {entry.master}
+        {entry.module} &rarr; <strong style={{ color: hover ? TEAL : GRAY900 }}>{entry.master}</strong>
       </span>
     </div>
   );
