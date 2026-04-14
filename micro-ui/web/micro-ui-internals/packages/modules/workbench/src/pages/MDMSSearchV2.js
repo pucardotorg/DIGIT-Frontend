@@ -23,6 +23,23 @@ const S = {
     padding: "32px 16px 80px",
     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   },
+  breadcrumb: {
+    marginBottom: "20px",
+  },
+  breadcrumbLink: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "6px",
+    color: GRAY500,
+    textDecoration: "none",
+    fontSize: "13px",
+    fontWeight: 500,
+    cursor: "pointer",
+    transition: "color 0.15s",
+  },
+  breadcrumbLinkHover: {
+    color: TEAL,
+  },
   heroCard: {
     background: WHITE,
     borderRadius: "16px",
@@ -443,6 +460,20 @@ const MDMSSearchV2 = () => {
 
   return (
     <div style={S.page}>
+      {/* ── breadcrumb navigation ── */}
+      <div style={S.breadcrumb}>
+        <a
+          href={`/${window?.contextPath}/employee/home`}
+          style={S.breadcrumbLink}
+          onClick={(e) => {
+            e.preventDefault();
+            history.push(`/${window?.contextPath}/employee/home`);
+          }}
+        >
+          &larr; {t("WB_HOME") || "Home"}
+        </a>
+      </div>
+
       {/* ── hero card ── */}
       <div style={S.heroCard}>
         <div style={S.heroAccent} />
