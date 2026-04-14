@@ -10,32 +10,30 @@ const WORKBENCH_ROLES = {
 };
 
 const WorkbenchCard = () => {
+  const { t } = useTranslation();
+
   // Role-based access guard — same logic as the npm WorkbenchCard
   const allRoles = Object.values(WORKBENCH_ROLES).flatMap((r) => r);
   if (!Digit.Utils.didEmployeeHasAtleastOneRole(allRoles)) {
     return null;
   }
 
-  const { t } = useTranslation();
-
   // Build links and filter by user roles (same as npm version)
   let links = [
     {
-      label: t("ACTION_TEST_MDMS"),
+      label: t("ACTION_TEST_MDMS") || "Manage Master Data",
       link: `/${window?.contextPath}/employee/workbench/manage-master-data`,
       roles: WORKBENCH_ROLES.MDMS,
     },
     {
-      label: t("ACTION_TEST_LOCALISATION"),
-      link: `/${window?.contextPath}/employee/workbench/localisation-search`,
+      label: t("ACTION_TEST_LOCALISATION") || "Manage Localization",
+      link: `/${window?.contextPath}/employee/workbench/localization-search`,
       roles: WORKBENCH_ROLES.LOCALISATION,
     },
   ];
 
   // Only show links the current user has roles for
-  links = links.filter(
-    (item) => item.roles?.length > 0 && Digit.Utils.didEmployeeHasAtleastOneRole(item.roles)
-  );
+  links = links.filter((item) => item.roles?.length > 0 && Digit.Utils.didEmployeeHasAtleastOneRole(item.roles));
 
   return (
     <ModuleCard

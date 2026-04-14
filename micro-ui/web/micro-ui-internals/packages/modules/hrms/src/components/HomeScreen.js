@@ -403,7 +403,15 @@ var ModuleCardItem = function (props) {
           </div>
         )}
 
-        <AccessButton to={props.accessLink} label={props.accessLabel || "Access Module"} />
+        {props.links && props.links.length > 0 ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            {props.links.map(function (link, idx) {
+              return <AccessButton key={idx} to={link.to} label={link.label} />;
+            })}
+          </div>
+        ) : (
+          <AccessButton to={props.accessLink} label={props.accessLabel || "Access Module"} />
+        )}
       </div>
     </div>
   );
@@ -513,8 +521,16 @@ var HomeScreen = function () {
                 { label: "MDMS Records", value: "-" },
                 { label: "Configurations", value: "-" },
               ]}
-              accessLink={"/" + (window.contextPath || "digit-ui") + "/employee/workbench/manage-master-data"}
-              accessLabel={t("ACTION_TEST_MDMS") || "Access Module"}
+              links={[
+                {
+                  to: "/" + (window.contextPath || "digit-ui") + "/employee/workbench/manage-master-data",
+                  label: t("ACTION_TEST_MDMS") || "Manage Master Data",
+                },
+                {
+                  to: "/" + (window.contextPath || "digit-ui") + "/employee/workbench/localization-search",
+                  label: t("ACTION_TEST_LOCALISATION") || "Manage Localization",
+                },
+              ]}
             />
           )}
         </div>

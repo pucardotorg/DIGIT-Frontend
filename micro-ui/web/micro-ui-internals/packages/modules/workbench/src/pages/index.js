@@ -8,6 +8,8 @@ const WorkbenchApp = ({ path }) => {
   const MDMSDetail = Digit?.ComponentRegistryService?.getComponent("WBMDMSDetailV2");
   const MDMSCreate = Digit?.ComponentRegistryService?.getComponent("WBMDMSCreateV2");
   const MDMSAdd = Digit?.ComponentRegistryService?.getComponent("WBMDMSAddV2");
+  const LocalizationSearch = Digit?.ComponentRegistryService?.getComponent("WBLocalizationSearch");
+  const LocalizationCreate = Digit?.ComponentRegistryService?.getComponent("WBLocalizationCreate");
 
   return (
     <Switch>
@@ -18,6 +20,8 @@ const WorkbenchApp = ({ path }) => {
           <PrivateRoute path={`${path}/mdms-view-row`} component={() => <MDMSDetail />} />
           <PrivateRoute path={`${path}/mdms-add`} component={() => <MDMSAdd />} />
           <PrivateRoute path={`${path}/mdms-view`} component={() => <MDMSView />} />
+          <PrivateRoute path={`${path}/localization-search`} component={() => <LocalizationSearch />} />
+          <PrivateRoute path={`${path}/localization-create`} component={() => <LocalizationCreate />} />
         </div>
       </React.Fragment>
     </Switch>
