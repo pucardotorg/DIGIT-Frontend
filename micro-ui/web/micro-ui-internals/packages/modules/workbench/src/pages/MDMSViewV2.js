@@ -281,6 +281,233 @@ const S = {
     fontWeight: 700,
     padding: "0 6px",
   },
+
+  /* ── inline cell editing ── */
+  cellWrap: {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    width: "100%",
+  },
+  cellValue: {
+    flex: 1,
+    minWidth: 0,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+  cellIcons: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "2px",
+    flexShrink: 0,
+    opacity: 0,
+    transition: "opacity 0.15s",
+  },
+  cellIconBtn: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "24px",
+    height: "24px",
+    borderRadius: "6px",
+    border: "none",
+    background: "transparent",
+    cursor: "pointer",
+    color: GRAY400,
+    fontSize: "14px",
+    padding: 0,
+    transition: "background 0.12s, color 0.12s",
+  },
+  cellIconBtnHover: {
+    background: TEAL_LIGHT,
+    color: TEAL,
+  },
+  inlineInput: {
+    width: "100%",
+    padding: "4px 8px",
+    border: "1.5px solid " + TEAL,
+    borderRadius: "6px",
+    fontSize: "13px",
+    color: GRAY700,
+    outline: "none",
+    background: WHITE,
+    boxSizing: "border-box",
+  },
+  inlineActions: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "4px",
+    flexShrink: 0,
+  },
+  inlineSaveBtn: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "26px",
+    height: "26px",
+    borderRadius: "6px",
+    border: "none",
+    background: TEAL,
+    color: WHITE,
+    cursor: "pointer",
+    fontSize: "14px",
+    padding: 0,
+  },
+  inlineCancelBtn: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "26px",
+    height: "26px",
+    borderRadius: "6px",
+    border: "1px solid " + GRAY200,
+    background: WHITE,
+    color: GRAY500,
+    cursor: "pointer",
+    fontSize: "14px",
+    padding: 0,
+  },
+
+  /* ── popup / modal overlay ── */
+  overlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: "rgba(0,0,0,0.4)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 10000,
+  },
+  popupCard: {
+    background: WHITE,
+    borderRadius: "14px",
+    width: "560px",
+    maxWidth: "92vw",
+    maxHeight: "80vh",
+    display: "flex",
+    flexDirection: "column",
+    boxShadow: "0 20px 60px rgba(0,0,0,0.18)",
+  },
+  popupHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "18px 24px",
+    borderBottom: "1px solid " + GRAY100,
+  },
+  popupTitle: {
+    fontSize: "16px",
+    fontWeight: 700,
+    color: GRAY900,
+    margin: 0,
+  },
+  popupClose: {
+    background: "transparent",
+    border: "none",
+    fontSize: "20px",
+    cursor: "pointer",
+    color: GRAY400,
+    padding: "4px",
+    lineHeight: 1,
+  },
+  popupBody: {
+    padding: "20px 24px",
+    flex: 1,
+    overflowY: "auto",
+  },
+  popupTextarea: {
+    width: "100%",
+    minHeight: "200px",
+    padding: "12px 14px",
+    border: "1.5px solid " + GRAY200,
+    borderRadius: "10px",
+    fontSize: "13px",
+    fontFamily: "'SF Mono', Consolas, 'Courier New', monospace",
+    color: GRAY700,
+    outline: "none",
+    resize: "vertical",
+    boxSizing: "border-box",
+    lineHeight: 1.5,
+  },
+  popupTextareaFocus: {
+    borderColor: TEAL,
+    boxShadow: "0 0 0 3px " + TEAL_LIGHT,
+  },
+  popupError: {
+    color: RED,
+    fontSize: "12px",
+    marginTop: "8px",
+  },
+  popupFooter: {
+    display: "flex",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    gap: "10px",
+    padding: "14px 24px",
+    borderTop: "1px solid " + GRAY100,
+  },
+  popupCancelBtn: {
+    padding: "8px 20px",
+    borderRadius: "8px",
+    border: "1px solid " + GRAY200,
+    background: WHITE,
+    color: GRAY700,
+    fontSize: "13px",
+    fontWeight: 600,
+    cursor: "pointer",
+  },
+  popupSaveBtn: {
+    padding: "8px 20px",
+    borderRadius: "8px",
+    border: "none",
+    background: "linear-gradient(135deg, " + TEAL + " 0%, #1aabb8 100%)",
+    color: WHITE,
+    fontSize: "13px",
+    fontWeight: 600,
+    cursor: "pointer",
+  },
+  popupSaveBtnDisabled: {
+    opacity: 0.5,
+    cursor: "not-allowed",
+  },
+  popupFieldLabel: {
+    fontSize: "12px",
+    fontWeight: 600,
+    color: GRAY500,
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+    marginBottom: "8px",
+  },
+
+  /* ── toast ── */
+  toast: {
+    position: "fixed",
+    bottom: "24px",
+    right: "24px",
+    padding: "12px 20px",
+    borderRadius: "10px",
+    fontSize: "13px",
+    fontWeight: 600,
+    zIndex: 10001,
+    boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    animation: "slideInToast 0.25s ease-out",
+  },
+  toastSuccess: {
+    background: GREEN_BG,
+    color: GREEN,
+    border: "1px solid " + GREEN,
+  },
+  toastError: {
+    background: RED_BG,
+    color: RED,
+    border: "1px solid " + RED,
+  },
 };
 
 /* ─────────────── FilterChip sub-component ─────────────── */
@@ -394,6 +621,82 @@ const renderCellValue = (val) => {
   return str;
 };
 
+/* ─────────────── CellEditPopup sub-component ─────────────── */
+const CellEditPopup = ({ fieldKey, value, onSave, onClose }) => {
+  const isComplex = typeof value === "object" && value !== null;
+  const [text, setText] = useState(isComplex ? JSON.stringify(value, null, 2) : String(value != null ? value : ""));
+  const [parseError, setParseError] = useState(null);
+  const [taFocused, setTaFocused] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    let parsed = text;
+    if (isComplex) {
+      try {
+        parsed = JSON.parse(text);
+        setParseError(null);
+      } catch (err) {
+        setParseError("Invalid JSON: " + err.message);
+        return;
+      }
+    }
+    setSaving(true);
+    await onSave(parsed);
+    setSaving(false);
+  };
+
+  return (
+    <div style={S.overlay} onClick={onClose}>
+      <div style={S.popupCard} onClick={(e) => e.stopPropagation()}>
+        <div style={S.popupHeader}>
+          <h3 style={S.popupTitle}>Edit: {fieldKey}</h3>
+          <button type="button" style={S.popupClose} onClick={onClose}>
+            &times;
+          </button>
+        </div>
+        <div style={S.popupBody}>
+          <div style={S.popupFieldLabel}>{isComplex ? "JSON Value" : "Value"}</div>
+          <textarea
+            style={{ ...S.popupTextarea, ...(taFocused ? S.popupTextareaFocus : {}) }}
+            value={text}
+            onChange={(e) => {
+              setText(e.target.value);
+              setParseError(null);
+            }}
+            onFocus={() => setTaFocused(true)}
+            onBlur={() => setTaFocused(false)}
+            spellCheck={false}
+          />
+          {parseError && <div style={S.popupError}>{parseError}</div>}
+        </div>
+        <div style={S.popupFooter}>
+          <button type="button" style={S.popupCancelBtn} onClick={onClose}>
+            Cancel
+          </button>
+          <button type="button" style={{ ...S.popupSaveBtn, ...(saving ? S.popupSaveBtnDisabled : {}) }} onClick={handleSave} disabled={saving}>
+            {saving ? "Saving..." : "Save"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ─────────────── Toast sub-component ─────────────── */
+const Toast = ({ message, type, onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 3000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div style={{ ...S.toast, ...(type === "success" ? S.toastSuccess : S.toastError) }}>
+      <span>{type === "success" ? "\u2713" : "\u2717"}</span>
+      <span>{message}</span>
+    </div>
+  );
+};
+
 /* ═══════════════════════════════════════════════
    MDMSViewV2 — results screen
    ═══════════════════════════════════════════════ */
@@ -416,6 +719,13 @@ const MDMSViewV2 = () => {
   const [columnFilters, setColumnFilters] = useState({});
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
+
+  /* ── inline editing state ── */
+  const [editingCell, setEditingCell] = useState(null);
+  const [editValue, setEditValue] = useState("");
+  const [popupCell, setPopupCell] = useState(null);
+  const [toast, setToast] = useState(null);
+  const [hoverCell, setHoverCell] = useState(null);
 
   /* ── fetch MDMS data ── */
   useEffect(() => {
@@ -566,14 +876,174 @@ const MDMSViewV2 = () => {
     setCurrentPage(0);
   }, [searchText, columnFilters, pageSize]);
 
+  /* ── inline cell save handler ── */
+  const handleCellSave = useCallback(
+    async (row, colKey, newValue) => {
+      const schemaCode = `${moduleName}.${masterName}`;
+      const mdmsId = row._mdmsId;
+      const uniqueId = row._mdmsUniqueIdentifier;
+      const auditDetails = row._mdmsAuditDetails;
+
+      if (!mdmsId && !uniqueId) {
+        setToast({ message: "Cannot save: record has no MDMS ID (v1 data is read-only)", type: "error" });
+        setEditingCell(null);
+        return;
+      }
+
+      const { _mdmsId, _mdmsUniqueIdentifier, _mdmsAuditDetails, isActive, ...dataFields } = row;
+      const updatedData = { ...dataFields, [colKey]: newValue };
+
+      try {
+        const body = {
+          Mdms: {
+            tenantId: stateId || tenantId,
+            schemaCode,
+            uniqueIdentifier: uniqueId,
+            data: updatedData,
+            isActive: isActive !== undefined ? isActive : true,
+          },
+        };
+        if (mdmsId) body.Mdms.id = mdmsId;
+        if (auditDetails) body.Mdms.auditDetails = auditDetails;
+
+        await Digit.CustomService.getResponse({
+          url: "/egov-mdms-service/v2/_update",
+          params: {},
+          body,
+        });
+
+        setRawData((prev) =>
+          prev.map((r) => {
+            if (r._mdmsId === mdmsId) {
+              return { ...r, [colKey]: newValue };
+            }
+            return r;
+          })
+        );
+        setToast({ message: t("WB_RECORD_UPDATED") || "Cell updated successfully", type: "success" });
+      } catch (err) {
+        console.error("[WB Inline] Save error:", err);
+        setToast({
+          message: err?.response?.data?.Errors?.[0]?.message || t("WB_SAVE_FAILED") || "Failed to save cell",
+          type: "error",
+        });
+      }
+      setEditingCell(null);
+    },
+    [moduleName, masterName, tenantId, stateId, t]
+  );
+
   /* ── table columns ── */
   const columns = useMemo(() => {
     return schema.map((col) => ({
       key: col.key,
       label: col.key,
-      render: (row) => renderCellValue(row[col.key]),
+      render: (row, rowIdx) => {
+        const val = row[col.key];
+        const valType = getValueType(val);
+        const isComplex = valType === "array" || valType === "object";
+        const cellId = `${rowIdx}-${col.key}`;
+        const isEditing = editingCell === cellId;
+        const isHovered = hoverCell === cellId;
+        const hasV2Id = !!row._mdmsId;
+
+        if (isEditing && !isComplex) {
+          return (
+            <div style={S.cellWrap} onClick={(e) => e.stopPropagation()}>
+              <input
+                style={S.inlineInput}
+                type={valType === "number" ? "number" : "text"}
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    let parsed = editValue;
+                    if (valType === "number") parsed = Number(editValue);
+                    else if (valType === "boolean") parsed = editValue === "true";
+                    handleCellSave(row, col.key, parsed);
+                  }
+                  if (e.key === "Escape") setEditingCell(null);
+                }}
+                autoFocus
+              />
+              <div style={S.inlineActions}>
+                <button
+                  type="button"
+                  style={S.inlineSaveBtn}
+                  title="Save"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    let parsed = editValue;
+                    if (valType === "number") parsed = Number(editValue);
+                    else if (valType === "boolean") parsed = editValue === "true";
+                    handleCellSave(row, col.key, parsed);
+                  }}
+                >
+                  &#10003;
+                </button>
+                <button
+                  type="button"
+                  style={S.inlineCancelBtn}
+                  title="Cancel"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingCell(null);
+                  }}
+                >
+                  &#10005;
+                </button>
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <div style={S.cellWrap} onMouseEnter={() => setHoverCell(cellId)} onMouseLeave={() => setHoverCell(null)}>
+            <span style={S.cellValue}>{renderCellValue(val)}</span>
+            {hasV2Id && (
+              <span style={{ ...S.cellIcons, ...(isHovered ? { opacity: 1 } : {}) }}>
+                {!isComplex && (
+                  <button
+                    type="button"
+                    style={S.cellIconBtn}
+                    title="Edit inline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingCell(cellId);
+                      setEditValue(val != null ? String(val) : "");
+                    }}
+                    onMouseEnter={(e) => Object.assign(e.currentTarget.style, S.cellIconBtnHover)}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "transparent";
+                      e.currentTarget.style.color = GRAY400;
+                    }}
+                  >
+                    &#9998;
+                  </button>
+                )}
+                <button
+                  type="button"
+                  style={S.cellIconBtn}
+                  title={isComplex ? "Edit in popup" : "Expand editor"}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPopupCell({ row, colKey: col.key, value: val });
+                  }}
+                  onMouseEnter={(e) => Object.assign(e.currentTarget.style, S.cellIconBtnHover)}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.color = GRAY400;
+                  }}
+                >
+                  {isComplex ? "\u270E" : "\u2197"}
+                </button>
+              </span>
+            )}
+          </div>
+        );
+      },
     }));
-  }, [schema]);
+  }, [schema, editingCell, editValue, hoverCell, handleCellSave]);
 
   /* ── active filter pills ── */
   const pills = Object.entries(columnFilters)
@@ -632,13 +1102,31 @@ const MDMSViewV2 = () => {
           </p>
         </div>
         <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-           <button 
-             type="button" 
-             style={{ padding: "9px 20px", borderRadius: "10px", border: "none", cursor: "pointer", fontSize: "13px", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "6px", background: `linear-gradient(135deg, ${TEAL} 0%, #1aabb8 100%)`, color: WHITE }} 
-             onClick={() => history.push(`/${window?.contextPath}/employee/workbench/mdms-add?module=${encodeURIComponent(moduleName)}&master=${encodeURIComponent(masterName)}`)}
-           >
-             &#43; {t("WB_ADD_MDMS") || "Add MDMS"}
-           </button>
+          <button
+            type="button"
+            style={{
+              padding: "9px 20px",
+              borderRadius: "10px",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "13px",
+              fontWeight: 600,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              background: `linear-gradient(135deg, ${TEAL} 0%, #1aabb8 100%)`,
+              color: WHITE,
+            }}
+            onClick={() =>
+              history.push(
+                `/${window?.contextPath}/employee/workbench/mdms-add?module=${encodeURIComponent(moduleName)}&master=${encodeURIComponent(
+                  masterName
+                )}`
+              )
+            }
+          >
+            &#43; {t("WB_ADD_MDMS") || "Add MDMS"}
+          </button>
         </div>
       </div>
 
@@ -747,6 +1235,22 @@ const MDMSViewV2 = () => {
           totalRecords: filteredData.length,
         }}
       />
+
+      {/* ── popup editor for complex / expanded values ── */}
+      {popupCell && (
+        <CellEditPopup
+          fieldKey={popupCell.colKey}
+          value={popupCell.value}
+          onSave={async (newValue) => {
+            await handleCellSave(popupCell.row, popupCell.colKey, newValue);
+            setPopupCell(null);
+          }}
+          onClose={() => setPopupCell(null)}
+        />
+      )}
+
+      {/* ── toast notification ── */}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 };
