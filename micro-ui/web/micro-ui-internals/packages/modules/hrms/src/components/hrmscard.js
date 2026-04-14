@@ -17,10 +17,7 @@ const HRMSCard = () => {
   const activeEmployees = isLoading ? "-" : data?.EmployeCount?.activeEmployee;
 
   // Calculate percentage for the ring chart (active / total)
-  const activePercent =
-    !isLoading && totalEmployees > 0
-      ? Math.round((activeEmployees / totalEmployees) * 100)
-      : 100;
+  const activePercent = !isLoading && totalEmployees > 0 ? Math.round((activeEmployees / totalEmployees) * 100) : 100;
 
   return (
     <ModuleCard

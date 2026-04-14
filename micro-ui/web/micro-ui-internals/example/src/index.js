@@ -14,6 +14,7 @@ import { initWorkbenchComponents } from "@egovernments/digit-ui-module-workbench
 import { PGRReducers, initPGRComponents } from "@egovernments/digit-ui-module-pgr";
 
 import "@egovernments/digit-ui-css/dist/index.css";
+import "./custom-overrides.css";
 
 import { pgrCustomizations } from "./pgr";
 import { UICustomizations } from "./UICustomizations";
@@ -22,9 +23,10 @@ var Digit = window.Digit || {};
 
 const enabledModules = [
   "DSS",
-  "HRMS", //here
+  "HRMS",
   "Workbench",
   "PGR",
+  "Home",
   //  "Engagement", "NDSS","QuickPayLinks", "Payment",
   // "Utilities",
   //added to check fsm

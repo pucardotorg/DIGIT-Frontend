@@ -83,6 +83,55 @@ DIGIT Frontend Repo (https://github.com/egovernments/Digit-Frontend/tree/master)
 
 ---
 
+## Home Screen Redesign
+
+> Replaces DIGIT's default employee home page with a fully custom dashboard matching the new Figma design.
+
+### Files changed
+
+| File                           | Change                                                                                                                                        |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/components/HomeScreen.js` | **New.** Custom home screen with welcome header, role-based module cards, operations overview, and security bar. Uses inline styles.          |
+| `src/Module.js`                | **Modified.** Imported `HomeScreen` and registered it as `EmployeeHome` in `componentsToRegister`.                                            |
+| `web/src/App.js`               | **Modified.** Fixed `initHRMSComponents()` call order — now runs after `initWorkbenchComponents()` so overrides win.                          |
+| `web/src/index.css`            | **Modified.** Added CSS overrides to restyle TopBar (teal gradient, white text), hide DIGIT search icon on home, hide default card container. |
+
+### Design Features
+
+- **Welcome header** — "Welcome back, {Name}" with system-live badge
+- **Role-based module cards** — HRMS Core and/or Project Workbench shown based on user roles
+- **Centered single card** — If user has only one role, the single card is centered on screen
+- **Statistics display** — Employee counts on HRMS card, placeholder metrics on Workbench card
+- **Operations Overview** — Pending Approvals, System Health, Upcoming Holidays, Critical Alerts
+- **Security compliance bar** — Encryption and audit logging status
+- **No search icon** — DIGIT's default search icon is removed from the home page
+- **Restyled TopBar** — Teal gradient background with white text/icons, matching the Figma design
+
+### Role Logic
+
+| Card      | Visible when                                                                                      |
+| --------- | ------------------------------------------------------------------------------------------------- |
+| HRMS      | User has `HRMS_ADMIN` role (checked via `Digit.Utils.hrmsAccess()`)                               |
+| Workbench | User has any of: `MDMS_ADMIN`, `EMPLOYEE`, `SUPERUSER`, `EMPLOYEE_COMMON`, `LOC_ADMIN`, `STADMIN` |
+
+### Init Order (Critical)
+
+```js
+// In App.js / example/src/index.js:
+initWorkbenchComponents(); // npm WorkbenchCard registered first
+initHRMSComponents(); // our EmployeeHome + WorkbenchCard overwrite ← must be last
+```
+
+### Build Constraints
+
+| Constraint                 | Reason                                             | Workaround                   |
+| -------------------------- | -------------------------------------------------- | ---------------------------- |
+| No `??` nullish coalescing | Babel/Webpack config does not support it           | Use `!= null ? x : fallback` |
+| No `.css` imports          | microbundle hashes class names (CSS Modules)       | Use inline JS style objects  |
+| TopBar is in npm core      | Cannot modify `@egovernments/digit-ui-module-core` | CSS overrides in `index.css` |
+
+---
+
 ## Card Redesign (Employee Home Page)
 
 > Replaces DIGIT's built-in `EmployeeModuleCard` with a fully custom React card design across the HRMS and Workbench modules.

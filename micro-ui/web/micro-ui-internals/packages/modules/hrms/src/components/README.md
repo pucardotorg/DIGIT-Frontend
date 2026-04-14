@@ -4,6 +4,69 @@ This folder contains all shared and feature-specific UI components for the HRMS 
 
 ---
 
+## Custom Home Screen
+
+### `HomeScreen.js` _(New — Custom home page UI)_
+
+A fully custom employee home screen that displays role-based module cards and welcome information. Rendered at `/employee/home` by the `HomeModule` routing component.
+
+### `HomeCard.js` _(New — Redirect component)_
+
+A convention-based card component that follows DIGIT's `{ModuleCode}Card` naming pattern. When "Home" is added to `enabledModules`, DIGIT core automatically looks for and renders `HomeCard`. This component redirects users from `/employee` to `/employee/home` where the custom `HomeScreen` is displayed.
+
+**Features:**
+
+- **Welcome header** — "Welcome back, {Name}" with system-live badge, matching the Figma design
+- **Role-based cards** — Shows HRMS and/or Workbench cards based on the logged-in user's roles
+- **Centered layout** — If the user has only one role (HRMS or Workbench), the single card is centered on screen
+- **Stats display** — Each card shows relevant statistics (e.g. Total Staff, Active Employees for HRMS)
+- **Operations Overview** — Dashboard-style metrics row (Pending Approvals, System Health, etc.)
+- **Security bar** — Compliance status indicator at the bottom
+- **No search icon** — The DIGIT search icon is removed from the home page via CSS overrides
+
+**Role configuration:**
+
+| Card      | Shown when user has role(s)                                                              |
+| --------- | ---------------------------------------------------------------------------------------- |
+| HRMS      | `HRMS_ADMIN` (via `Digit.Utils.hrmsAccess()`)                                            |
+| Workbench | Any of: `MDMS_ADMIN`, `EMPLOYEE`, `SUPERUSER`, `EMPLOYEE_COMMON`, `LOC_ADMIN`, `STADMIN` |
+
+**Centering logic:**
+
+- If both cards are visible → side-by-side layout (`flex`, gap)
+- If only one card → `justify-content: center` on the cards row
+
+**Data integration:**
+
+```js
+// User info for welcome message
+Digit.UserService.getUser().info.name;
+
+// HRMS employee count for stats
+Digit.Hooks.hrms.useHRMSCount(tenantId);
+```
+
+**Styling:** All inline JS styles (no CSS imports) using the same teal/gray token system. Background uses a subtle gradient from teal-light to gray-50.
+
+> **CSS overrides:** The home page also relies on CSS overrides in `web/src/index.css` to hide DIGIT's default search bar, module card container, and restyle the TopBar. See the CSS override section below.
+
+---
+
+## TopBar & CSS Overrides (`web/src/index.css`)
+
+The DIGIT core module's TopBar and home page elements are restyled via CSS overrides:
+
+| Override target          | Change                                     |
+| ------------------------ | ------------------------------------------ |
+| `.navbar`                | Teal gradient background, white text       |
+| `.navbar .logo`          | Inverted to white                          |
+| `.SearchComponent`, etc. | Hidden (`display: none`) on the home page  |
+| `.moduleLinkHomePage`    | Hidden — replaced by `HomeScreen.js` cards |
+| `.sidebar`               | White background, teal hover states        |
+| `.employee-home-btn`     | Hidden                                     |
+
+---
+
 ## Card Components (Employee Home Page)
 
 The employee home page renders a card for each enabled module using the **DIGIT Component Registry** convention: it calls `Digit.ComponentRegistryService.getComponent("{ModuleName}Card")` for every entry in `enabledModules`.

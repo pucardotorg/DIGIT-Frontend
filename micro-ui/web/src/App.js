@@ -20,11 +20,13 @@ const enabledModules = [
   "HRMS",
   "Engagement",
   "Workbench",
-  "PGR"
+  "PGR",
+  "Home",
 ];
 
 const moduleReducers = (initData) => ({
-  initData, pgr: PGRReducers(initData),
+  initData,
+  pgr: PGRReducers(initData),
 });
 
 const initDigitUI = () => {
@@ -35,9 +37,11 @@ const initDigitUI = () => {
   };
   initPGRComponents();
   initEngagementComponents();
-  initHRMSComponents();
   initUtilitiesComponents();
   initWorkbenchComponents();
+  // IMPORTANT: initHRMSComponents must run AFTER initWorkbenchComponents
+  // so our local WorkbenchCard and HomeCard overrides win in the registry.
+  initHRMSComponents();
 };
 
 initLibraries().then(() => {
