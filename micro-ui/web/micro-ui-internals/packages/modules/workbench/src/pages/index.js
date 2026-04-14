@@ -10,6 +10,7 @@ const WorkbenchApp = ({ path }) => {
   const MDMSAdd = Digit?.ComponentRegistryService?.getComponent("WBMDMSAddV2");
   const LocalizationSearch = Digit?.ComponentRegistryService?.getComponent("WBLocalizationSearch");
   const LocalizationCreate = Digit?.ComponentRegistryService?.getComponent("WBLocalizationCreate");
+  const LocalizationUpload = Digit?.ComponentRegistryService?.getComponent("WBLocalizationUpload");
 
   return (
     <Switch>
@@ -22,6 +23,7 @@ const WorkbenchApp = ({ path }) => {
           <PrivateRoute path={`${path}/mdms-view`} component={() => <MDMSView />} />
           <PrivateRoute path={`${path}/localization-search`} component={() => <LocalizationSearch />} />
           <PrivateRoute path={`${path}/localization-create`} component={() => <LocalizationCreate />} />
+          <PrivateRoute path={`${path}/localization-upload`} component={() => <LocalizationUpload />} />
         </div>
       </React.Fragment>
     </Switch>

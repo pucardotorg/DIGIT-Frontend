@@ -8,6 +8,7 @@ import MDMSCreateV2 from "./pages/MDMSCreateV2";
 import MDMSAddV2 from "./pages/MDMSAddV2";
 import LocalizationSearch from "./pages/LocalizationSearch";
 import LocalizationCreate from "./pages/LocalizationCreate";
+import LocalizationUpload from "./pages/LocalizationUpload";
 import workbenchHooks from "./hooks";
 
 /* ═══════════════════════════════════════════════
@@ -34,6 +35,7 @@ const componentsToRegister = {
   WBMDMSAddV2: MDMSAddV2,
   WBLocalizationSearch: LocalizationSearch,
   WBLocalizationCreate: LocalizationCreate,
+  WBLocalizationUpload: LocalizationUpload,
 };
 
 export const initWorkbenchComponents = () => {

@@ -26,6 +26,7 @@ A comprehensive localization management feature has been added to the Workbench 
 - **Search & Filter**:
   - Real-time filtering by code or message text
   - Clear search button to reset filters
+  - Refetch button to fetch latest data from server
   - Pagination resets when searching
 - **Inline Editing**:
   - Click ✎ icon to edit directly in table cells
@@ -42,8 +43,8 @@ A comprehensive localization management feature has been added to the Workbench 
 
 **API Used:**
 
-- `POST /localization/messages/v1/_search` (auto-called on mount)
-- `POST /localization/messages/v1/_update` (for inline/popup edits)
+- `POST /localization/messages/v1/_search` (auto-called on mount, also used for refetch)
+- `POST /localization/messages/v1/_update` (for inline/popup edits and bulk uploads)
 
 ### 3. **Localization Create Page** (`LocalizationCreate.js`)
 
@@ -61,6 +62,9 @@ A comprehensive localization management feature has been added to the Workbench 
   - Module defaults to "rainmaker-common"
   - Locale defaults to "en_IN"
   - New rows inherit same defaults
+- **File Upload Option:**
+  - "Upload File" button to navigate to bulk upload page
+  - Alternative method for creating multiple entries
 - **Bulk Creation:**
   - All entries are created in a single API call
   - Success/error toast notifications
@@ -71,7 +75,56 @@ A comprehensive localization management feature has been added to the Workbench 
 - `POST /localization/messages/v1/_create`
 - Body: `{ tenantId, messages: [{ code, message, module, locale }] }`
 
-### 4. **Removed: Localization View Page**
+### 4. **Localization Upload Page** (`LocalizationUpload.js`)
+
+**Route:** `/employee/workbench/localization-upload`
+
+**Features:**
+
+- **Excel File Upload:**
+  - Drag and drop or click to browse
+  - Accepts .xlsx and .xls files
+  - File size display
+- **Column Validation:**
+  - Required columns (case-sensitive): **Code**, **Module**, **Message**, **Locale**
+  - Validates column headers before parsing
+  - Shows error toast if columns don't match
+  - Prevents API call if validation fails
+- **Data Preview:**
+  - Shows first 10 entries in a table
+  - Displays total entry count
+  - Preview before uploading
+- **Data Extraction:**
+  - Parses Excel file using xlsx library
+  - Filters out rows with missing required fields
+  - Extracts data and formats for API call
+- **Bulk Upload:**
+  - Uploads all valid entries in single API call
+  - Success/error toast notifications
+  - Auto-redirect to search page on success
+- **User Guidance:**
+  - Info box with required format details
+  - Clear instructions for column names
+  - File format requirements
+
+**API Used:**
+
+- `POST /localization/messages/v1/_update` (handles both create and update)
+- Body: `{ tenantId, locale, module, messages: [{ code, message }] }`
+- Groups entries by locale/module for efficient processing
+
+**Excel Format Requirements:**
+
+| Code             | Module           | Message | Locale |
+| ---------------- | ---------------- | ------- | ------ |
+| CS_COMMON_SUBMIT | rainmaker-common | Submit  | en_IN  |
+| CS_COMMON_CANCEL | rainmaker-common | Cancel  | en_IN  |
+
+- Column headers must match exactly (case-sensitive)
+- All four columns are required for each row
+- Empty rows are automatically filtered out
+
+### 5. **Removed: Localization View Page**
 
 **Status:** ❌ **REMOVED**
 
@@ -111,6 +164,7 @@ The separate LocalizationView page has been removed to simplify the user experie
 1. `/src/hooks/useLocalizationSearch.js` - API hooks for localization
 2. `/src/pages/LocalizationSearch.js` - Search page with inline/popup editing
 3. `/src/pages/LocalizationCreate.js` - Create page with default values
+4. `/src/pages/LocalizationUpload.js` - Excel file upload page
 
 ### Removed Files:
 
@@ -119,8 +173,8 @@ The separate LocalizationView page has been removed to simplify the user experie
 ### Modified Files:
 
 1. `/src/hooks/index.js` - Exported localization hooks
-2. `/src/Module.js` - Registered localization components (removed LocalizationView)
-3. `/src/pages/index.js` - Added localization routes (removed localization-view route)
+2. `/src/Module.js` - Registered localization components (removed LocalizationView, added LocalizationUpload)
+3. `/src/pages/index.js` - Added localization routes (removed localization-view, added localization-upload)
 4. `/../hrms/src/components/HomeScreen.js` - Added "Manage Localization" link to workbench card
 5. `/../hrms/src/components/WorkbenchCard.js` - Updated with localization link (backup)
 
@@ -129,7 +183,8 @@ The separate LocalizationView page has been removed to simplify the user experie
 Components registered with Digit.ComponentRegistryService:
 
 - `WBLocalizationSearch` - Search and edit page
-- `WBLocalizationCreate` - Create new entries
+- `WBLocalizationCreate` - Create new entries (manual + upload option)
+- `WBLocalizationUpload` - Excel file upload page
 - ~~`WBLocalizationView`~~ - ❌ Removed
 
 ## Routes
@@ -137,7 +192,8 @@ Components registered with Digit.ComponentRegistryService:
 All routes are under `/employee/workbench/`:
 
 - `localization-search` - Main search page with editing capabilities
-- `localization-create` - Create new entries
+- `localization-create` - Create new entries manually
+- `localization-upload` - Upload Excel file for bulk creation
 - ~~`localization-view`~~ - ❌ Removed (functionality integrated into search page)
 
 ## Backend API Endpoints Required
@@ -155,8 +211,11 @@ The feature uses the following DIGIT localization service endpoints:
 1. **Home Screen** → Click "Manage Localization" in Workbench card
 2. **Search Page** → All data auto-loads with pagination (100 entries per page)
 3. **Search & Filter** → Type to filter by code or message → Click "Clear" to reset
-4. **Edit Entries** → Click ✎ for inline edit OR ⤢ for popup edit → Save changes
-5. **Create New** → Click "Create New" → Add entries with defaults → Click "Create"
+4. **Refresh Data** → Click "Refetch" to get latest data from server
+5. **Edit Entries** → Click ✎ for inline edit OR ⤢ for popup edit → Save changes
+6. **Create New** → Click "Create New" → Choose:
+   - **Manual Entry**: Add entries with defaults → Click "Create"
+   - **Upload File**: Click "Upload File" → Select Excel → Preview → Upload
 
 ### **Previous Workflow (Deprecated)**
 
@@ -172,7 +231,12 @@ The feature uses the following DIGIT localization service endpoints:
 - ✅ **Pagination** - Handle large datasets efficiently
 - ✅ **Single-page editing** - Edit directly in search results
 - ✅ **Clear search** - Easy filter reset
+- ✅ **Refetch data** - Get latest data from server without page reload
 - ✅ **Default values** - Module defaults to "rainmaker-common", Locale to "en_IN"
+- ✅ **Excel upload** - Bulk creation via file upload with validation
+- ✅ **Column validation** - Prevents API calls with invalid Excel format
+- ✅ **Data preview** - Review entries before uploading
+- ✅ **Update API** - Uses update API for both create and update operations
 
 ## Design Patterns
 
@@ -191,9 +255,22 @@ The feature uses the following DIGIT localization service endpoints:
 - **Auto-load**: Search API called automatically on page mount
 - **Search**: Real-time filtering by code or message text
 - **Clear Search**: Button to reset search filters
+- **Refetch Data**: Button to fetch latest data from server without page reload
 - **Editing**: Both inline (✎) and popup (⤢) editing available
+- **Excel Upload**:
+  - Supports .xlsx and .xls files
+  - Required columns (case-sensitive): Code, Module, Message, Locale
+  - Column validation before API call
+  - Preview data before uploading
+  - Uses update API (handles both create and update operations)
+  - Groups entries by locale/module for efficient processing
+  - Uses xlsx library (v0.17.5) for parsing
 - **Removed**: Separate LocalizationView page - functionality integrated into search page
 - **UI**: Wider table layout (1200px max width) for better content display
 - **API**: All calls include `RequestInfo` with auth token
 - **Error Handling**: Toast notifications for success/error feedback
 - **Loading**: Loader component during API calls
+
+## Dependencies
+
+- **xlsx** (v0.17.5) - Excel file parsing for bulk upload feature

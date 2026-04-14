@@ -247,11 +247,35 @@ const LocalizationCreate = () => {
       <div style={S.heroCard}>
         <div style={S.heroAccent} />
         <div style={S.heroBody}>
-          <div style={S.heroIcon}>&#43;</div>
-          <h1 style={S.heroTitle}>{t("WB_CREATE_LOCALIZATION") || "Create Localization"}</h1>
-          <p style={S.heroSub}>
-            {t("WB_CREATE_LOCALIZATION_DESC") || "Add new localization entries manually. You can add multiple entries at once."}
-          </p>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+            <div>
+              <div style={S.heroIcon}>&#43;</div>
+              <h1 style={S.heroTitle}>{t("WB_CREATE_LOCALIZATION") || "Create Localization"}</h1>
+              <p style={S.heroSub}>
+                {t("WB_CREATE_LOCALIZATION_DESC") || "Add new localization entries manually. You can add multiple entries at once."}
+              </p>
+            </div>
+            <button
+              type="button"
+              style={{
+                background: "linear-gradient(135deg, #0d6a82 0%, #1aabb8 100%)",
+                color: "#ffffff",
+                padding: "10px 24px",
+                borderRadius: "8px",
+                border: "none",
+                fontSize: "14px",
+                fontWeight: 600,
+                cursor: "pointer",
+                boxShadow: "0 2px 6px rgba(13,106,130,0.18)",
+                transition: "transform 0.12s, box-shadow 0.12s",
+                whiteSpace: "nowrap",
+                marginTop: "4px",
+              }}
+              onClick={() => history.push(`/${window?.contextPath}/employee/workbench/localization-upload`)}
+            >
+              📤 {t("WB_UPLOAD_FILE") || "Upload File"}
+            </button>
+          </div>
         </div>
       </div>
 

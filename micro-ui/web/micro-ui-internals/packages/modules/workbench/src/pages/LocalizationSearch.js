@@ -587,6 +587,7 @@ const LocalizationSearch = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(100);
   const [clearButtonHover, setClearButtonHover] = useState(false);
+  const [isRefetching, setIsRefetching] = useState(false);
 
   const { isLoading, data: localizationData, refetch } = Digit.Hooks.workbench.useLocalizationSearch(
     tenantId,
@@ -633,6 +634,18 @@ const LocalizationSearch = () => {
         },
       }
     );
+  };
+
+  const handleRefetch = async () => {
+    setIsRefetching(true);
+    try {
+      await refetch();
+      setShowToast({ error: false, label: "Data refreshed successfully" });
+    } catch (error) {
+      setShowToast({ error: true, label: "Failed to refresh data" });
+    } finally {
+      setIsRefetching(false);
+    }
   };
 
   const handleEditPopup = (index, field, value) => {
@@ -724,6 +737,17 @@ const LocalizationSearch = () => {
             disabled={!searchQuery.trim()}
           >
             Clear
+          </button>
+          <button
+            type="button"
+            style={{
+              ...S.btnSecondary,
+              ...(isRefetching ? S.btnSecondaryDisabled : {}),
+            }}
+            onClick={handleRefetch}
+            disabled={isRefetching}
+          >
+            {isRefetching ? "Refreshing..." : "Refetch"}
           </button>
         </div>
 
