@@ -368,6 +368,39 @@ const S = {
     padding: 0,
   },
 
+  /* boolean toggle capsule */
+  toggleCapsule: {
+    display: "inline-flex",
+    alignItems: "center",
+    padding: "2px 3px",
+    borderRadius: "12px",
+    fontSize: "11px",
+    fontWeight: 600,
+    cursor: "pointer",
+    transition: "background 0.2s, color 0.2s",
+    userSelect: "none",
+  },
+  toggleTrue: {
+    background: GREEN_BG,
+    color: GREEN,
+  },
+  toggleFalse: {
+    background: RED_BG,
+    color: RED,
+  },
+  toggleOption: {
+    padding: "2px 8px",
+    borderRadius: "10px",
+    transition: "background 0.2s, color 0.2s",
+  },
+  toggleOptionActive: {
+    background: WHITE,
+    color: GRAY900,
+  },
+  toggleOptionInactive: {
+    color: "transparent",
+  },
+
   /* ── popup / modal overlay ── */
   overlay: {
     position: "fixed",
@@ -624,6 +657,7 @@ const renderCellValue = (val) => {
 /* ─────────────── CellEditPopup sub-component ─────────────── */
 const CellEditPopup = ({ fieldKey, value, onSave, onClose }) => {
   const isComplex = typeof value === "object" && value !== null;
+  const isBoolean = typeof value === "boolean";
   const [text, setText] = useState(isComplex ? JSON.stringify(value, null, 2) : String(value != null ? value : ""));
   const [parseError, setParseError] = useState(null);
   const [taFocused, setTaFocused] = useState(false);
@@ -645,6 +679,12 @@ const CellEditPopup = ({ fieldKey, value, onSave, onClose }) => {
     setSaving(false);
   };
 
+  const handleBooleanToggle = async (newValue) => {
+    setSaving(true);
+    await onSave(newValue);
+    setSaving(false);
+  };
+
   return (
     <div style={S.overlay} onClick={onClose}>
       <div style={S.popupCard} onClick={(e) => e.stopPropagation()}>
@@ -655,27 +695,47 @@ const CellEditPopup = ({ fieldKey, value, onSave, onClose }) => {
           </button>
         </div>
         <div style={S.popupBody}>
-          <div style={S.popupFieldLabel}>{isComplex ? "JSON Value" : "Value"}</div>
-          <textarea
-            style={{ ...S.popupTextarea, ...(taFocused ? S.popupTextareaFocus : {}) }}
-            value={text}
-            onChange={(e) => {
-              setText(e.target.value);
-              setParseError(null);
-            }}
-            onFocus={() => setTaFocused(true)}
-            onBlur={() => setTaFocused(false)}
-            spellCheck={false}
-          />
+          <div style={S.popupFieldLabel}>{isComplex ? "JSON Value" : isBoolean ? "Boolean Value" : "Value"}</div>
+
+          {/* Boolean toggle capsule */}
+          {isBoolean && (
+            <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
+              <div
+                style={{ ...S.toggleCapsule, ...(value ? S.toggleTrue : S.toggleFalse), cursor: "pointer" }}
+                onClick={() => handleBooleanToggle(!value)}
+              >
+                <span style={{ ...S.toggleOption, ...(value ? S.toggleOptionActive : S.toggleOptionInactive) }}>TRUE</span>
+                <span style={{ ...S.toggleOption, ...(!value ? S.toggleOptionActive : S.toggleOptionInactive) }}>FALSE</span>
+              </div>
+            </div>
+          )}
+
+          {/* Textarea for non-boolean values */}
+          {!isBoolean && (
+            <textarea
+              style={{ ...S.popupTextarea, ...(taFocused ? S.popupTextareaFocus : {}) }}
+              value={text}
+              onChange={(e) => {
+                setText(e.target.value);
+                setParseError(null);
+              }}
+              onFocus={() => setTaFocused(true)}
+              onBlur={() => setTaFocused(false)}
+              spellCheck={false}
+            />
+          )}
+
           {parseError && <div style={S.popupError}>{parseError}</div>}
         </div>
         <div style={S.popupFooter}>
           <button type="button" style={S.popupCancelBtn} onClick={onClose}>
             Cancel
           </button>
-          <button type="button" style={{ ...S.popupSaveBtn, ...(saving ? S.popupSaveBtnDisabled : {}) }} onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : "Save"}
-          </button>
+          {!isBoolean && (
+            <button type="button" style={{ ...S.popupSaveBtn, ...(saving ? S.popupSaveBtnDisabled : {}) }} onClick={handleSave} disabled={saving}>
+              {saving ? "Saving..." : "Save"}
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -948,6 +1008,39 @@ const MDMSViewV2 = () => {
         const hasV2Id = !!row._mdmsId;
 
         if (isEditing && !isComplex) {
+          // Show toggle capsule for boolean values
+          if (valType === "boolean") {
+            const isTrue = val === true;
+            return (
+              <div style={S.cellWrap} onClick={(e) => e.stopPropagation()}>
+                <div
+                  style={{ ...S.toggleCapsule, ...(isTrue ? S.toggleTrue : S.toggleFalse) }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCellSave(row, col.key, !isTrue);
+                  }}
+                >
+                  <span style={{ ...S.toggleOption, ...(isTrue ? S.toggleOptionActive : S.toggleOptionInactive) }}>TRUE</span>
+                  <span style={{ ...S.toggleOption, ...(!isTrue ? S.toggleOptionActive : S.toggleOptionInactive) }}>FALSE</span>
+                </div>
+                <div style={S.inlineActions}>
+                  <button
+                    type="button"
+                    style={S.inlineCancelBtn}
+                    title="Done"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingCell(null);
+                    }}
+                  >
+                    &#10005;
+                  </button>
+                </div>
+              </div>
+            );
+          }
+
+          // Regular input for string and number values
           return (
             <div style={S.cellWrap} onClick={(e) => e.stopPropagation()}>
               <input
@@ -959,7 +1052,6 @@ const MDMSViewV2 = () => {
                   if (e.key === "Enter") {
                     let parsed = editValue;
                     if (valType === "number") parsed = Number(editValue);
-                    else if (valType === "boolean") parsed = editValue === "true";
                     handleCellSave(row, col.key, parsed);
                   }
                   if (e.key === "Escape") setEditingCell(null);
@@ -975,7 +1067,6 @@ const MDMSViewV2 = () => {
                     e.stopPropagation();
                     let parsed = editValue;
                     if (valType === "number") parsed = Number(editValue);
-                    else if (valType === "boolean") parsed = editValue === "true";
                     handleCellSave(row, col.key, parsed);
                   }}
                 >

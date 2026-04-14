@@ -27,7 +27,7 @@ const styles = {
   wrap: {
     background: WHITE,
     borderRadius: "12px",
-    overflow: "hidden",
+    overflowX: "auto",
     boxShadow: "0 1px 8px rgba(0,0,0,0.05)",
     border: `1px solid ${GRAY200}`,
   },
