@@ -473,6 +473,10 @@ const EmployeeForm = () => {
   );
   const { data: mdmsData, isLoading: mdmsLoading } = Digit.Hooks.hrms.useHrmsMDMS(tenantId, "egov-hrms", "HRMSRolesandDesignation") || {};
   const { data: empTypeData, isLoading: empTypeLoading } = Digit.Hooks.hrms.useHrmsMDMS(tenantId, "egov-hrms", "EmployeeType") || {};
+  const { data: employeeRoleMapping } = Digit.Hooks.useCustomMDMS(stateId, "egov-hrms", [{ name: "EmployeeRolesMapping" }], {
+    retry: false,
+    enable: true,
+  });
 
   const [mutationHappened, setMutationHappened, clearMutation] = Digit.Hooks.useSessionStorage("EMPLOYEE_HRMS_MUTATION_HAPPENED", false);
   const [errorInfo, setErrorInfo, clearError] = Digit.Hooks.useSessionStorage("EMPLOYEE_HRMS_ERROR_DATA", false);
@@ -552,6 +556,7 @@ const EmployeeForm = () => {
   const [assignments, setAssignments] = useState([{ ...emptyAssignment }]);
   const [phoneChecked, setPhoneChecked] = useState(false);
   const [initialized, setInitialized] = useState(!isEdit);
+  const [prevEmpType, setPrevEmpType] = useState(null);
 
   /* ── populate form for edit mode ── */
   useEffect(() => {
@@ -619,6 +624,56 @@ const EmployeeForm = () => {
     }, 500);
     return () => clearTimeout(timer);
   }, [phone, tenantId, isEdit, empData, t]);
+
+  /* ── auto-fill roles when employee type changes ── */
+  useEffect(() => {
+    if (!empType || !employeeRoleMapping || !initialized) return;
+
+    const currentEmpTypeCode = empType?.code;
+    const prevEmpTypeCode = prevEmpType?.code;
+
+    // Only auto-fill if employee type actually changed
+    if (currentEmpTypeCode === prevEmpTypeCode) return;
+
+    const roleMapping = employeeRoleMapping?.["egov-hrms"]?.EmployeeRolesMapping;
+
+    if (!roleMapping || roleMapping.length === 0) {
+      return;
+    }
+
+    // Filter role mapping for selected employee type
+    const filteredRoleMapping = roleMapping.filter((role) => role.employeeCode === currentEmpTypeCode);
+
+    if (filteredRoleMapping.length === 0) {
+      setPrevEmpType(empType);
+      return;
+    }
+
+    // Map role codes to role objects
+    const mappedRoles = filteredRoleMapping.flatMap((role) =>
+      (role.roleCodes || [])
+        .map((roleItem) => {
+          return roleItem
+            ? {
+                code: roleItem,
+                name: roleItem || " ",
+                labelKey: "ACCESSCONTROL_ROLES_ROLES_" + roleItem,
+              }
+            : null;
+        })
+        .filter((item) => item !== null)
+    );
+
+    // Update all assignments with the new roles
+    setAssignments((prev) =>
+      prev.map((assignment) => ({
+        ...assignment,
+        roles: mappedRoles,
+      }))
+    );
+
+    setPrevEmpType(empType);
+  }, [empType, employeeRoleMapping, initialized, prevEmpType]);
 
   /* ── validation ── */
   const nameValid = name && name.length > 0 && (Digit.Utils.getPattern("Name") ? name.match(Digit.Utils.getPattern("Name")) : true);

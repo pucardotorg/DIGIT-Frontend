@@ -238,7 +238,7 @@ Uses two backend APIs (discovered from `egov-mdms-service` backend):
 POST /egov-mdms-service/schema/v1/_create
 Body: {
   "SchemaDefinition": {
-    "tenantId": "kl",
+    "tenantId": "pb",
     "code": "moduleName.masterName",
     "description": "optional",
     "definition": { /* JSON Schema */ },
@@ -253,7 +253,7 @@ Body: {
 POST /egov-mdms-service/v2/_create
 Body: {
   "Mdms": {
-    "tenantId": "kl",
+    "tenantId": "pb",
     "schemaCode": "moduleName.masterName",
     "uniqueIdentifier": "1",
     "data": { /* record data */ },

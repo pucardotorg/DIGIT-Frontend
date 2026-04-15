@@ -17,7 +17,7 @@ The workbench module uses **MDMS v2** endpoints, not the old v1 MDMS endpoints.
 ```json
 {
   "SchemaDefCriteria": {
-    "tenantId": "kl",
+    "tenantId": "pb",
     "limit": 200
   },
   "RequestInfo": { ... }
@@ -31,7 +31,7 @@ The workbench module uses **MDMS v2** endpoints, not the old v1 MDMS endpoints.
   "SchemaDefinitions": [
     {
       "id": "...",
-      "tenantId": "kl",
+      "tenantId": "pb",
       "code": "common-masters.assigneToOfficeMembers",
       "description": null,
       "definition": { ... },
@@ -64,7 +64,7 @@ The workbench module uses **MDMS v2** endpoints, not the old v1 MDMS endpoints.
 ```json
 {
   "MdmsCriteria": {
-    "tenantId": "kl",
+    "tenantId": "pb",
     "schemaCode": "commonUiConfig.chequeDetailsConfig",
     "limit": 500,
     "offset": 0
@@ -81,7 +81,7 @@ The workbench module uses **MDMS v2** endpoints, not the old v1 MDMS endpoints.
   "mdms": [
     {
       "id": "bb8eddc2-00d6-43c2-a723-2e456874237d",
-      "tenantId": "kl",
+      "tenantId": "pb",
       "schemaCode": "commonUiConfig.chequeDetailsConfig",
       "uniqueIdentifier": "1",
       "data": {
@@ -110,7 +110,7 @@ The workbench module uses **MDMS v2** endpoints, not the old v1 MDMS endpoints.
 ```json
 {
   "SchemaDefinition": {
-    "tenantId": "kl",
+    "tenantId": "pb",
     "code": "moduleName.masterName",
     "description": "Optional description",
     "definition": {
@@ -135,7 +135,7 @@ The workbench module uses **MDMS v2** endpoints, not the old v1 MDMS endpoints.
   "SchemaDefinitions": [
     {
       "id": "generated-uuid",
-      "tenantId": "kl",
+      "tenantId": "pb",
       "code": "moduleName.masterName",
       "definition": { ... },
       "isActive": true,
@@ -158,7 +158,7 @@ The workbench module uses **MDMS v2** endpoints, not the old v1 MDMS endpoints.
 ```json
 {
   "Mdms": {
-    "tenantId": "kl",
+    "tenantId": "pb",
     "schemaCode": "moduleName.masterName",
     "uniqueIdentifier": "1",
     "data": { ... },
@@ -176,7 +176,7 @@ The workbench module uses **MDMS v2** endpoints, not the old v1 MDMS endpoints.
   "mdms": [
     {
       "id": "generated-uuid",
-      "tenantId": "kl",
+      "tenantId": "pb",
       "schemaCode": "moduleName.masterName",
       "uniqueIdentifier": "1",
       "data": { ... },
@@ -201,7 +201,7 @@ The workbench module uses **MDMS v2** endpoints, not the old v1 MDMS endpoints.
 {
   "Mdms": {
     "id": "existing-record-uuid",
-    "tenantId": "kl",
+    "tenantId": "pb",
     "schemaCode": "moduleName.masterName",
     "uniqueIdentifier": "1",
     "data": { ... },
@@ -250,7 +250,7 @@ The workbench module uses **MDMS v2** endpoints, not the old v1 MDMS endpoints.
    - URL: `/egov-mdms-service/schema/v1/_search`
    - Status: 200
    - Response: Array of `SchemaDefinitions`
-   - *Note*: This call happens once upfront, and the `allData` map is kept in memory. The search box filters the list without requiring subsequent API calls.
+   - _Note_: This call happens once upfront, and the `allData` map is kept in memory. The search box filters the list without requiring subsequent API calls.
 
 2. **Search Results**: After clicking on a suggested combination from the search results, check for:
 
