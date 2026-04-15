@@ -23,11 +23,13 @@
     "dev:example": "cd example && yarn start",
  
     "dev:hrms": "cd packages/modules/hrms && yarn start",
+    "dev:workbench": "cd packages/modules/workbench && yarn start",
    
     "build": "run-p build:**",
     "build:libraries": "cd packages/libraries && yarn build",
    
     "build:hrms": "cd packages/modules/hrms && yarn build",
+    "build:workbench": "cd packages/modules/workbench && yarn build",
     "deploy:jenkins": "./scripts/jenkins.sh",
     "clean": "rm -rf node_modules"
   },

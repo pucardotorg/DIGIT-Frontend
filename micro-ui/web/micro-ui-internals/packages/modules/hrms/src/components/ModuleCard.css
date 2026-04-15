@@ -1,0 +1,242 @@
+/* ======================================
+   ModuleCard — Custom Card Component
+   ====================================== */
+
+/* ---------- Card Container ---------- */
+.module-card {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), 0 0 1px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  min-width: 260px;
+  max-width: 380px;
+  flex: 1 1 300px;
+}
+
+.module-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.10), 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- Card Header ---------- */
+.module-card__header {
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gradient themes */
+.module-card__header--hrms {
+  background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+}
+.module-card__header--workbench {
+  background: linear-gradient(135deg, #0d6a82 0%, #1aabb8 100%);
+}
+.module-card__header--default {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+/* Subtle shine overlay */
+.module-card__header::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent 60%);
+  pointer-events: none;
+}
+
+.module-card__title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 1;
+}
+
+.module-card__icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.module-card__icon svg {
+  fill: #ffffff;
+  width: 20px;
+  height: 20px;
+}
+
+.module-card__title {
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  margin: 0;
+}
+
+/* ---------- Card Body ---------- */
+.module-card__body {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+/* ---------- KPIs ---------- */
+.module-card__kpis {
+  display: flex;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.module-card__kpi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  text-decoration: none;
+  color: inherit;
+  padding: 10px 8px;
+  border-radius: 10px;
+  background: #f9fafb;
+  border: 1px solid #f0f0f0;
+  transition: background 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+.module-card__kpi:hover {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+
+.module-card__kpi-ring {
+  width: 56px;
+  height: 56px;
+  position: relative;
+  margin-bottom: 6px;
+}
+.module-card__kpi-ring svg {
+  width: 56px;
+  height: 56px;
+  transform: rotate(-90deg);
+}
+.module-card__kpi-ring .ring-bg {
+  fill: none;
+  stroke: #e5e7eb;
+  stroke-width: 4;
+}
+.module-card__kpi-ring .ring-fill {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.module-card__kpi-ring .ring-fill--primary {
+  stroke: #0d6a82;
+}
+.module-card__kpi-ring .ring-fill--accent {
+  stroke: #f97316;
+}
+.module-card__kpi-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.module-card__kpi-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* ---------- Links ---------- */
+.module-card__links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.module-card__link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.18s, color 0.18s, padding-left 0.18s;
+  cursor: pointer;
+}
+.module-card__link:hover {
+  background: #f3f4f6;
+  color: #0d6a82;
+  padding-left: 16px;
+}
+
+.module-card__link-arrow {
+  margin-left: auto;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.18s, transform 0.18s;
+  font-size: 14px;
+  color: #9ca3af;
+}
+.module-card__link:hover .module-card__link-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.module-card__link-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.module-card__link-dot--hrms {
+  background: #f97316;
+}
+.module-card__link-dot--workbench {
+  background: #0d6a82;
+}
+.module-card__link-dot--default {
+  background: #6366f1;
+}
+
+/* ---------- Cards Wrapper ---------- */
+.module-cards-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 0;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 640px) {
+  .module-card {
+    max-width: 100%;
+    min-width: 100%;
+  }
+  .module-card__kpis {
+    gap: 10px;
+  }
+}

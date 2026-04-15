@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DesktopInbox from "../components/inbox/DesktopInbox";
 import MobileInbox from "../components/inbox/MobileInbox";
+import SearchEmployeeScreen from "../components/SearchEmployeeScreen";
 
 const Inbox = ({ parentRoute, businessService = "HRMS", initialStates = {}, filterComponent, isInbox }) => {
   const tenantId = Digit.ULBService.getCurrentTenantId();
@@ -61,8 +62,9 @@ const Inbox = ({ parentRoute, businessService = "HRMS", initialStates = {}, filt
     setSortParams(args);
   }, []);
 
-  const handlePageSizeChange = (e) => {
-    setPageSize(Number(e.target.value));
+  const handlePageSizeChange = (newSize) => {
+    setPageSize(Number(newSize));
+    setPageOffset(0);
   };
 
   const getSearchFields = () => {
@@ -114,7 +116,7 @@ const Inbox = ({ parentRoute, businessService = "HRMS", initialStates = {}, filt
           searchParams={searchParams}
           sortParams={sortParams}
           totalRecords={totalRecords}
-          linkPrefix={ `/${window?.contextPath}/employee/hrms/details/`}
+          linkPrefix={`/${window?.contextPath}/employee/hrms/details/`}
           filterComponent={filterComponent}
         />
         // <div></div>
@@ -122,28 +124,18 @@ const Inbox = ({ parentRoute, businessService = "HRMS", initialStates = {}, filt
     } else {
       return (
         <div>
-          {isInbox && <Header>{t("HR_HOME_SEARCH_RESULTS_HEADING")}</Header>}
-          <DesktopInbox
-            businessService={businessService}
+          <SearchEmployeeScreen
             data={data}
             isLoading={hookLoading}
-            defaultSearchParams={initialStates.searchParams}
-            isSearch={!isInbox}
-            onFilterChange={handleFilterChange}
-            searchFields={getSearchFields()}
             onSearch={handleFilterChange}
-            onSort={handleSort}
-            onNextPage={fetchNextPage}
-            onPrevPage={fetchPrevPage}
+            onFilterChange={handleFilterChange}
+            searchParams={searchParams}
             currentPage={Math.floor(pageOffset / pageSize)}
             pageSizeLimit={pageSize}
-            disableSort={false}
+            onNextPage={fetchNextPage}
+            onPrevPage={fetchPrevPage}
             onPageSizeChange={handlePageSizeChange}
-            parentRoute={parentRoute}
-            searchParams={searchParams}
-            sortParams={sortParams}
             totalRecords={totalRecords}
-            filterComponent={filterComponent}
           />
         </div>
       );

@@ -1,12 +1,13 @@
 /* ═══════════════════════════════════════════════════════════
-   Custom Home Screen & TopBar Overrides
-   Sits on top of the DIGIT core CSS (digit-ui-css@1.8.0)
+   Custom Home Screen & TopBar Overrides (Example App)
+   Same overrides as web/src/index.css — keeps both entry
+   points visually consistent.
    ═══════════════════════════════════════════════════════════ */
 
-/* ── TopBar — match Figma design ───────────────────────── */
+/* ── TopBar — teal gradient matching Figma design ──────── */
 .navbar {
   background: linear-gradient(135deg, #0d6a82 0%, #1aabb8 100%) !important;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.10) !important;
   height: 56px !important;
 }
 .navbar .logo {
@@ -17,14 +18,12 @@
   border: 2px solid rgba(255, 255, 255, 0.5) !important;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15) !important;
 }
-/* TopBar text colour */
 .navbar .city-name,
 .navbar .employee-name,
 .navbar span,
 .navbar p {
   color: #ffffff !important;
 }
-/* Notification bell icon — make white */
 .navbar .NotificationBell svg,
 .navbar .NotificationBell path,
 .navbar svg.notificationIconEmployee {
@@ -32,7 +31,7 @@
   color: #ffffff !important;
 }
 
-/* ── Hide the search icon / global search on the home page ── */
+/* ── Hide DIGIT search icon on home page ───────────────── */
 .employee-app-container .SearchComponent,
 .employee-app-container .SearchIcon,
 .employee-app-container .search-icon-wrapper,
@@ -40,25 +39,23 @@
 .citizen-home-search,
 .home-action-bar-wrap,
 .employee-app-container > .ground-container > .bannerCard,
-/* DIGIT search bar that appears on home screen */
 .employeeHomePage .SearchComponent,
 .employeeHomePage .home-action-bar {
   display: none !important;
 }
 
-/* ── Home page card container — handled by our custom component,
-      but ensure the default card wrapper doesn't interfere ── */
+/* ── Hide default card container (replaced by HomeScreen) ─ */
 .moduleLinkHomePage {
   display: none !important;
 }
 
-/* ── Ensure the custom home screen fills available space ── */
+/* ── Home screen fills available space ─────────────────── */
 .employee-app-container .ground-container {
   padding: 0 !important;
   margin: 0 !important;
 }
 
-/* ── Sidebar styling ── */
+/* ── Sidebar ───────────────────────────────────────────── */
 .sidebar {
   background: #ffffff !important;
   border-right: 1px solid #e5e7eb !important;
@@ -74,7 +71,7 @@
   color: #0d6a82 !important;
 }
 
-/* ── General resets for the home page ── */
+/* ── Hide default home buttons ─────────────────────────── */
 .employee-home-btn,
 .employee-home-btn-wrap {
   display: none !important;
